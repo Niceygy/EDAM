@@ -7,7 +7,7 @@
 /* templates/main.css */
 @font-face {
   font-family: "EUROCAPS";
-  src: url("static/fonts/EUROCAPS.TTF");
+  src: url("./fonts/EUROCAPS.TTF");
 }
 
 body {
@@ -123,4 +123,13 @@ label {
   width: 100% !important;
   height: 33% !important;
   max-width: 100vw;
+}
+
+.knob-row {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+}
+.knob-side-content {
+  flex: 1;
 }

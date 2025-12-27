@@ -8,13 +8,15 @@ COPY go.mod go.sum ./
 # Copy source code
 COPY . .
 # Build the application
-RUN go build -o edam .
+# RUN go build -o edam .
+RUN CGO_ENABLED=0 GOOS=linux go build -o edam .
 # Use a minimal base image for final deployment
 FROM alpine:latest
 # Set working directory in the container
 WORKDIR /root/
 # Copy the built binary from the builder stage
 COPY --from=builder /app/edam .
+COPY . .
 LABEL org.opencontainers.image.description="EDDataCollector"
 LABEL org.opencontainers.image.authors="Niceygy (Ava Whale)"
 
