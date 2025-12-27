@@ -29,6 +29,7 @@ fetch("data/messageCount.csv")
       },
       options: {
         responsive: true,
+        maintainAspectRatio: false,
         scales: {
           y: { beginAtZero: true },
           x: { display: true, title: { display: true, text: "Time" } },

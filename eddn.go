@@ -31,8 +31,7 @@ func downloadEDDNCsv() {
 		return
 	}
 	defer resp.Body.Close()
-	// filedata := []byte{}
-	// resp.Body.Read(filedata)
+
 	filedata, err := io.ReadAll(resp.Body)
 
 	err = os.Remove(EDDN_CSV_FILEPATH)

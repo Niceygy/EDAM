@@ -7,14 +7,15 @@
   <link href="assets/style.css" rel="stylesheet" />
   <body>
     <h1>E.D.A.M</h1>
-    <div style="text-align: center">
-      <div id="steamPlayerGauge"></div>
-      <p><i>Current Steam Players</i></p>
+    <div class="main-flex">
+      <div class="knob-section">
+        <div id="steamPlayerGauge"></div>
+        <p class="knob-label"><i>Current Steam Players</i></p>
+      </div>
+      <div class="chart-section">
+        <canvas id="eddnMessagesChart" width="1200" height="333"></canvas>
+      </div>
     </div>
-    <div style="width: 85%; height: 1000px; text-align: center">
-      <canvas id="eddnMessagesChart" width="300" height="300"></canvas>
-    </div>
-
     <div>Made with 🩷 & 💥, by Niceygy</div>
 
     <script src="assets/charts/steamPlayerGauge.js"></script>
