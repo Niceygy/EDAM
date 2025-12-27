@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"time"
 )
 
 type Response struct {
@@ -13,7 +14,20 @@ type Response struct {
 	} `json:"response"`
 }
 
+var LAST_FETCHED time.Time = time.Now()
+var CACHED_COUNT int = fetchPlayerCount()
+
 func getPlayerCount() int {
+	now := time.Now()
+	if LAST_FETCHED.Sub(now).Minutes() > 15 {
+		CACHED_COUNT = fetchPlayerCount()
+		LAST_FETCHED = now
+	}
+
+	return CACHED_COUNT
+}
+
+func fetchPlayerCount() int {
 	req, err := http.NewRequest(http.MethodGet, "https://api.steampowered.com/ISteamUserStats/GetNumberOfCurrentPlayers/v1?appid=359320", nil)
 	if err != nil {
 		fmt.Printf("client: could not create request: %s\n", err)

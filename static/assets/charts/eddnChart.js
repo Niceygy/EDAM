@@ -11,16 +11,16 @@ fetch("data/messageCount.csv")
       labels.push(date.toLocaleString());
       data.push(parseInt(count, 10));
     }
-    const ctx = document.getElementById("myLineChart").getContext("2d");
+    const ctx = document.getElementById("eddnMessagesChart").getContext("2d");
     new Chart(ctx, {
       type: "line",
       data: {
         labels: labels,
         datasets: [
           {
-            label: "Count",
+            label: "EDDN Messages / Hour",
             data: data,
-            borderColor: "rgba(75, 192, 192, 1)",
+            borderColor: "rgb(230, 129, 14)",
             borderWidth: 2,
             fill: false,
             pointRadius: 0,

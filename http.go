@@ -1,7 +1,7 @@
 package main
 
 import (
-	"encoding/binary"
+	"fmt"
 	"log"
 	"net/http"
 )
@@ -9,11 +9,14 @@ import (
 func serve() {
 	// Serve files from the "static" directory
 	http.Handle("/", http.FileServer(http.Dir("static")))
-	http.HandleFunc("/hello", func(w http.ResponseWriter, r *http.Request) {
-		count := getPlayerCount()
-		bs := make([]byte, 4)
-		binary.LittleEndian.PutUint32(bs, count)
-		w.Write()
+
+	http.HandleFunc("/data/steamcount", func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprintln(w, getPlayerCount())
+	})
+
+	http.HandleFunc("/data/eddncsv", func(w http.ResponseWriter, r *http.Request) {
+
+		fmt.Fprintln(w, "")
 	})
 
 	// Start the server on port 8080
