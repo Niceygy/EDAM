@@ -8,17 +8,25 @@
   <link href="assets/style.css" rel="stylesheet" />
   <body>
     <h1>E.D.A.M</h1>
-    <div class="main-flex">
+    <div class="main-flex" style="align-content: center">
       <div class="knob-row">
         <div class="knob-section">
           <div id="steamPlayerGauge"></div>
           <p class="knob-label"><i>Current Steam Players</i></p>
         </div>
+        <div class="knob-section">
+          <div id="overallGauge"></div>
+          <p class="knob-label"><i>Overall Activity Rating</i></p>
+        </div>
+        <div class="knob-section">
+          <div id="eddnNowGauge"></div>
+          <p class="knob-label"><i>Current EDDN Players</i></p>
+        </div>
         <div class="knob-side-content"></div>
       </div>
-      <div class="chart-section">
-        <canvas id="eddnMessagesChart" width="1000" height="333"></canvas>
-      </div>
+    </div>
+    <div class="chart-section">
+      <canvas id="eddnMessagesChart"></canvas>
     </div>
     <div>Made with 🩷 & 💥, by Niceygy</div>
 

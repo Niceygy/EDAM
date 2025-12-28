@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 	"time"
 )
@@ -19,9 +20,10 @@ var CACHED_COUNT int = fetchPlayerCount()
 
 func getPlayerCount() int {
 	now := time.Now()
-	if LAST_FETCHED.Sub(now).Minutes() > 15 {
+	if now.Sub(LAST_FETCHED).Minutes() > 15 {
 		CACHED_COUNT = fetchPlayerCount()
 		LAST_FETCHED = now
+		log.Println("Updated steam player numbers")
 	}
 
 	return CACHED_COUNT
