@@ -10,8 +10,6 @@ import (
 
 const EDDN_CSV_FILEPATH = "static/data/messageCount.csv"
 
-var LAST_UPDATED time.Time = time.Now()
-
 func EDDNCsvLoop() {
 	for {
 		downloadEDDNCsv()
