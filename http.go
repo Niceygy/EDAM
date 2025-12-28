@@ -8,9 +8,20 @@ import (
 	"strings"
 )
 
+func middleware(h http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// headers
+		w.Header().Set("X-Powered-By", "NightSpeed Connect (Go)")
+		w.Header().Set("X-Created-By", "Niceygy (Ava Whale) - niceygy@niceygy.net")
+
+		h.ServeHTTP(w, r)
+	})
+}
+
 func serve() {
+
 	// Serve files from the "static" directory
-	http.Handle("/", http.FileServer(http.Dir("static")))
+	http.Handle("/", middleware(http.FileServer(http.Dir("static"))))
 
 	http.HandleFunc("/data/steamcount", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintln(w, getPlayerCount())
@@ -40,7 +51,6 @@ func serve() {
 		fmt.Fprintln(w, strings.Split(line, ",")[1])
 	})
 
-	// Start the server on port 8080
 	log.Println("Starting server on :3696")
 	if err := http.ListenAndServe(":3696", nil); err != nil {
 		log.Fatal(err)
