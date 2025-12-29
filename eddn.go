@@ -3,8 +3,11 @@ package main
 import (
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"os"
+	"strconv"
+	"strings"
 	"time"
 )
 
@@ -34,4 +37,51 @@ func downloadEDDNCsv() {
 
 	err = os.Remove(EDDN_CSV_FILEPATH)
 	err = os.WriteFile(EDDN_CSV_FILEPATH, filedata, os.ModeAppend)
+}
+
+func getHighestEDDNCount() int {
+	data, err := os.ReadFile("static/data/messageCount.csv")
+
+	if err != nil {
+		log.Println("ERR Open static/data/messageCount.csv: " + err.Error())
+	}
+
+	stringdata := string(data)
+
+	lines := strings.Split(stringdata, "\n")
+	largest := 0
+
+	for i := range lines {
+		line := lines[i]
+
+		if line == "" {
+			break
+		}
+
+		count, err := strconv.Atoi(strings.Split(line, ",")[1])
+		if err != nil {
+			log.Panic(err.Error())
+		}
+
+		if count > largest {
+			largest = count
+		}
+	}
+
+	return largest
+}
+
+func getCurrentEDDNCount() string {
+	data, err := os.ReadFile("static/data/messageCount.csv")
+
+	if err != nil {
+		log.Println("ERR Open static/data/messageCount.csv: " + err.Error())
+	}
+
+	stringdata := string(data)
+
+	lines := strings.Split(stringdata, "\n")
+	line := lines[len(lines)-2]
+
+	return strings.Split(line, ",")[1]
 }

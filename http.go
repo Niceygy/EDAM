@@ -5,7 +5,6 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"strings"
 )
 
 func middleware(h http.Handler) http.Handler {
@@ -37,18 +36,11 @@ func serve() {
 	})
 
 	http.HandleFunc("/data/eddncount", func(w http.ResponseWriter, r *http.Request) {
-		data, err := os.ReadFile("static/data/messageCount.csv")
+		fmt.Fprintln(w, getCurrentEDDNCount())
+	})
 
-		if err != nil {
-			log.Println("ERR Open static/data/messageCount.csv: " + err.Error())
-		}
-
-		stringdata := string(data)
-
-		lines := strings.Split(stringdata, "\n")
-		line := lines[len(lines)-2]
-
-		fmt.Fprintln(w, strings.Split(line, ",")[1])
+	http.HandleFunc("/data/activityrating", func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprintln(w, overallActivityRating())
 	})
 
 	log.Println("Starting server on :3696")

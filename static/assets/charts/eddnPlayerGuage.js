@@ -3,6 +3,7 @@ eddnPlayerKnob.setProperty("valMin", 0);
 eddnPlayerKnob.setProperty("valMax", 30000);
 eddnPlayerKnob.setProperty("angleStart", -0.75 * Math.PI);
 eddnPlayerKnob.setProperty("angleEnd", 0.75 * Math.PI);
+eddnPlayerKnob.setProperty("readonly", true);
 var node = eddnPlayerKnob.node();
 var elem = document.getElementById("eddnNowGauge");
 elem.appendChild(node);
