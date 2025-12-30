@@ -16,12 +16,12 @@ type Response struct {
 }
 
 var LAST_FETCHED time.Time = time.Now()
-var CACHED_COUNT int = fetchPlayerCount()
+var CACHED_COUNT int = fetchSteamPlayerCount()
 
-func getPlayerCount() int {
+func getSteamPlayerCount() int {
 	now := time.Now()
 	if now.Sub(LAST_FETCHED).Minutes() > 15 {
-		CACHED_COUNT = fetchPlayerCount()
+		CACHED_COUNT = fetchSteamPlayerCount()
 		LAST_FETCHED = now
 		log.Println("Updated steam player numbers")
 	}
@@ -29,7 +29,7 @@ func getPlayerCount() int {
 	return CACHED_COUNT
 }
 
-func fetchPlayerCount() int {
+func fetchSteamPlayerCount() int {
 	req, err := http.NewRequest(http.MethodGet, "https://api.steampowered.com/ISteamUserStats/GetNumberOfCurrentPlayers/v1?appid=359320", nil)
 	if err != nil {
 		fmt.Printf("client: could not create request: %s\n", err)

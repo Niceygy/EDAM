@@ -23,7 +23,7 @@ func serve() {
 	http.Handle("/", middleware(http.FileServer(http.Dir("static"))))
 
 	http.HandleFunc("/data/steamcount", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintln(w, getPlayerCount())
+		fmt.Fprintln(w, getSteamPlayerCount())
 	})
 
 	http.HandleFunc("/data/eddncsv", func(w http.ResponseWriter, r *http.Request) {

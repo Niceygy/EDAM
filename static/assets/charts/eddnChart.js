@@ -58,24 +58,12 @@ function getDataForxDays(days, csv) {
     const [unixtime, count] = csv[i].split(",");
     // Convert unixtime to readable date
     const date = new Date(parseInt(unixtime, 10) * 1000);
-    console.log(`Date ${date.toISOString()} was`);
     if (date > xDaysAgo) {
-      console.log(`accepted`);
       labels.push(date.toLocaleString());
       data.push(parseInt(count, 10));
     } else {
-      console.log("rejected");
     }
   }
 
-  console.log(labels);
-  console.log(data);
-
   return [labels, data];
-}
-
-function handleChartDateRangeChange() {
-  var range = document.getElementById("dateSelect").value;
-  var baseurl = window.location.href.split("?")[0];
-  window.location.href = `${baseurl}?range=${range}`;
 }

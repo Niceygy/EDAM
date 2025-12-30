@@ -8,6 +8,13 @@
   <title>E.D.A.M</title>
 
   <link href="assets/style.css" rel="stylesheet" />
+  <script>
+    function handleChartDateRangeChange() {
+      var range = document.getElementById("dateSelect").value;
+      var baseurl = window.location.href.split("?")[0];
+      window.location.href = `${baseurl}?range=${range}`;
+    }
+  </script>
   <body>
     <h1>E<i>lite </i>D<i>angerous </i>A<i>ctivity </i>M<i>onitor</i></h1>
     <div class="main-flex" style="align-content: center">
@@ -19,6 +26,7 @@
         <div class="knob-section">
           <div id="overallGauge"></div>
           <p class="knob-label"><i>Overall Activity Rating (%)</i></p>
+          <h3 class="activityRatingMessage"></h3>
         </div>
         <div class="knob-section">
           <div id="eddnNowGauge"></div>
@@ -44,12 +52,13 @@
     </div>
 
     <div>
-      <p>Made with 🩷 & 💥, by <a href="https://niceygy.net">Niceygy</a></p>
+      <p>Made with 🩷 & 💥, by <a href="https://niceygy.net">Niceygy</a>. <a href="/about.html">About</a></p>
     </div>
 
     <script src="assets/charts/steamPlayerGauge.js"></script>
     <script src="assets/charts/eddnChart.js"></script>
     <script src="assets/charts/eddnPlayerGuage.js"></script>
     <script src="assets/charts/overallGuage.js"></script>
+    <script src="assets/activityRatingMessage.js"></script>
   </body>
 </html>

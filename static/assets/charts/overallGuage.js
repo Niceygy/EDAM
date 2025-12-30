@@ -10,5 +10,5 @@ elem.appendChild(node);
 fetch("/data/activityrating")
   .then((response) => console.log(response.status) || response) // output the status and return response
   .then((response) => response.text())
-  .then((response) => overallKnob.setValue(response) || response);
-// .then((response) => overallKnob.setProperty("label", `${Math.round(response)}%`));
+  .then((response) => overallKnob.setValue(response) || response)
+  .then((response) => setActivityMessage(response));
