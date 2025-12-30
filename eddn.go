@@ -33,10 +33,18 @@ func downloadEDDNCsv() {
 	}
 	defer resp.Body.Close()
 
+	if resp.StatusCode != http.StatusOK {
+		fmt.Printf("client: bad status code: %d\n", resp.StatusCode)
+		return
+	}
+
 	filedata, err := io.ReadAll(resp.Body)
 
 	err = os.Remove(EDDN_CSV_FILEPATH)
-	err = os.WriteFile(EDDN_CSV_FILEPATH, filedata, os.ModeAppend)
+	err = os.WriteFile(EDDN_CSV_FILEPATH, filedata, 0644)
+	if err != nil {
+		fmt.Printf("client: error writing file: %s\n", err)
+	}
 }
 
 func getHighestEDDNCount() int {
@@ -81,7 +89,7 @@ func getCurrentEDDNCount() string {
 	stringdata := string(data)
 
 	lines := strings.Split(stringdata, "\n")
-	line := lines[len(lines)-2]
+	line := lines[0]
 
 	return strings.Split(line, ",")[1]
 }
