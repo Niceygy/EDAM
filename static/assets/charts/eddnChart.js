@@ -2,16 +2,21 @@ fetch("data/messageCount.csv")
   .then((response) => response.text())
   .then((csv) => {
     const lines = csv.trim().split("\n");
-    var labels = [];
-    var data = [];
-    // for (let i = 1; i < lines.length; i++) {
-    //   const [unixtime, count] = lines[i].split(",");
-    //   // Convert unixtime to readable date
-    //   const date = new Date(parseInt(unixtime, 10) * 1000);
-    //   labels.push(date.toLocaleString());
-    //   data.push(parseInt(count, 10));
-    // }
-    labels, (data = getDataForxDays(1, lines));
+
+    let dateRange = "";
+    let url = window.location.href;
+    if (url.includes("?range=")) {
+      dateRange = url.split("?range=")[1].replace("d", "");
+      if (dateRange == "all") {
+        dateRange = "365";
+      }
+
+      document.getElementById("dateSelect").value = url.split("?range=")[1];
+    }
+
+    let tmp = getDataForxDays(dateRange, lines);
+    let labels = tmp[0];
+    let data = tmp[1];
     const ctx = document.getElementById("eddnMessagesChart").getContext("2d");
     new Chart(ctx, {
       type: "line",
@@ -53,11 +58,24 @@ function getDataForxDays(days, csv) {
     const [unixtime, count] = csv[i].split(",");
     // Convert unixtime to readable date
     const date = new Date(parseInt(unixtime, 10) * 1000);
+    console.log(`Date ${date.toISOString()} was`);
     if (date > xDaysAgo) {
+      console.log(`accepted`);
       labels.push(date.toLocaleString());
       data.push(parseInt(count, 10));
+    } else {
+      console.log("rejected");
     }
   }
 
-  return labels, data;
+  console.log(labels);
+  console.log(data);
+
+  return [labels, data];
+}
+
+function handleChartDateRangeChange() {
+  var range = document.getElementById("dateSelect").value;
+  var baseurl = window.location.href.split("?")[0];
+  window.location.href = `${baseurl}?range=${range}`;
 }

@@ -1,4 +1,4 @@
-var overallKnob = pureknob.createKnob(300, 300);
+var overallKnob = pureknob.createKnob(350, 350);
 overallKnob.setProperty("valMin", 0);
 overallKnob.setProperty("valMax", 100);
 overallKnob.setProperty("angleStart", -0.75 * Math.PI);

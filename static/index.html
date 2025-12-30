@@ -9,7 +9,7 @@
 
   <link href="assets/style.css" rel="stylesheet" />
   <body>
-    <h1>E.D.A.M</h1>
+    <h1>E<i>lite </i>D<i>angerous </i>A<i>ctivity </i>M<i>onitor</i></h1>
     <div class="main-flex" style="align-content: center">
       <div class="knob-row">
         <div class="knob-section">
@@ -27,10 +27,21 @@
         <div class="knob-side-content"></div>
       </div>
     </div>
+
+    <div class="chartSelect" style="text-align: center">
+      <p>EDDN Messages / Hour History</p>
+      <select id="dateSelect" onchange="handleChartDateRangeChange()">
+        <option value="">-- Choose a date range for the chart --</option>
+        <option value="1d">1 Day</option>
+        <option value="7d">7 Days</option>
+        <option value="30d">30 Days</option>
+        <option value="90d">90 Days</option>
+        <option value="all">All Time</option>
+      </select>
+    </div>
     <div class="chart-section">
       <canvas id="eddnMessagesChart"></canvas>
     </div>
-    <p>EDDN Messages / Hour History</p>
 
     <div>
       <p>Made with 🩷 & 💥, by <a href="https://niceygy.net">Niceygy</a></p>

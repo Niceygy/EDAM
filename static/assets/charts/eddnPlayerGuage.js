@@ -1,4 +1,4 @@
-var eddnPlayerKnob = pureknob.createKnob(300, 300);
+var eddnPlayerKnob = pureknob.createKnob(250, 250);
 eddnPlayerKnob.setProperty("valMin", 0);
 eddnPlayerKnob.setProperty("valMax", 30000);
 eddnPlayerKnob.setProperty("angleStart", -0.75 * Math.PI);
