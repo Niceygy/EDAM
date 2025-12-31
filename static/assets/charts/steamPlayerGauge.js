@@ -1,6 +1,6 @@
 var steamPlayerKnob = pureknob.createKnob(250, 250);
 steamPlayerKnob.setProperty("valMin", 0);
-steamPlayerKnob.setProperty("valMax", 10000);
+steamPlayerKnob.setProperty("valMax", 20000);
 steamPlayerKnob.setProperty("angleStart", -0.75 * Math.PI);
 steamPlayerKnob.setProperty("angleEnd", 0.75 * Math.PI);
 steamPlayerKnob.setProperty("readonly", true);

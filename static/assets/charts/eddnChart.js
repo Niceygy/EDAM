@@ -12,6 +12,8 @@ fetch("data/messageCount.csv")
       }
 
       document.getElementById("dateSelect").value = url.split("?range=")[1];
+    } else {
+      dateRange = "1";
     }
 
     let tmp = getDataForxDays(dateRange, lines);

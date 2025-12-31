@@ -5,13 +5,14 @@ import (
 	"io"
 	"log"
 	"net/http"
-	"os"
 	"strconv"
 	"strings"
 	"time"
 )
 
 const EDDN_CSV_FILEPATH = "static/data/messageCount.csv"
+
+var EDDN_CSV_DATA string
 
 func EDDNCsvLoop() {
 	for {
@@ -38,23 +39,13 @@ func downloadEDDNCsv() {
 		return
 	}
 
-	filedata, err := io.ReadAll(resp.Body)
+	data, err := io.ReadAll(resp.Body)
 
-	err = os.Remove(EDDN_CSV_FILEPATH)
-	err = os.WriteFile(EDDN_CSV_FILEPATH, filedata, 0644)
-	if err != nil {
-		fmt.Printf("client: error writing file: %s\n", err)
-	}
+	EDDN_CSV_DATA = string(data)
 }
 
 func getHighestEDDNCount() int {
-	data, err := os.ReadFile("static/data/messageCount.csv")
-
-	if err != nil {
-		log.Println("ERR Open static/data/messageCount.csv: " + err.Error())
-	}
-
-	stringdata := string(data)
+	stringdata := EDDN_CSV_DATA
 
 	lines := strings.Split(stringdata, "\n")
 	largest := 0
@@ -80,13 +71,7 @@ func getHighestEDDNCount() int {
 }
 
 func getCurrentEDDNCount() string {
-	data, err := os.ReadFile("static/data/messageCount.csv")
-
-	if err != nil {
-		log.Println("ERR Open static/data/messageCount.csv: " + err.Error())
-	}
-
-	stringdata := string(data)
+	stringdata := EDDN_CSV_DATA
 
 	lines := strings.Split(stringdata, "\n")
 	line := lines[0]

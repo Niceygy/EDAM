@@ -11,7 +11,7 @@ func eddnActivityRating() float64 {
 
 func steamActivityRating() float64 {
 	var current int = getSteamPlayerCount()
-	var largest int = 20000
+	var largest int = 25000
 
 	return (float64(current) / float64(largest)) * 100
 }
