@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"os"
 )
 
 func middleware(h http.Handler) http.Handler {
@@ -27,11 +26,11 @@ func serve() {
 	})
 
 	http.HandleFunc("/data/eddncsv", func(w http.ResponseWriter, r *http.Request) {
-		data, err := os.ReadFile("static/data/messageCount.csv")
+		data := EDDN_CSV_DATA
 
-		if err != nil {
-			log.Println("ERR Open static/data/messageCount.csv: " + err.Error())
-		}
+		// if err != nil {
+		// 	log.Println("ERR Open static/data/messageCount.csv: " + err.Error())
+		// }
 		fmt.Fprintln(w, string(data))
 	})
 

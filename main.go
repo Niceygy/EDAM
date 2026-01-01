@@ -6,6 +6,6 @@ import (
 
 func main() {
 	log.Println("Loading...")
-	go EDDNCsvLoop()
+	go EDDNCsvLoop(&EDDN_CSV_DATA)
 	serve()
 }

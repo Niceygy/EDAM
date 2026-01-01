@@ -14,14 +14,14 @@ const EDDN_CSV_FILEPATH = "static/data/messageCount.csv"
 
 var EDDN_CSV_DATA string
 
-func EDDNCsvLoop() {
+func EDDNCsvLoop(data *string) {
 	for {
-		downloadEDDNCsv()
-		time.Sleep(time.Hour * 1)
+		downloadEDDNCsv(data)
+		time.Sleep(time.Minute * 30)
 	}
 }
 
-func downloadEDDNCsv() {
+func downloadEDDNCsv(data *string) {
 	req, err := http.NewRequest(http.MethodGet, "https://niceygy.net/experiments/edam/data.csv", nil)
 	if err != nil {
 		fmt.Printf("client: could not create request: %s\n", err)
@@ -39,9 +39,9 @@ func downloadEDDNCsv() {
 		return
 	}
 
-	data, err := io.ReadAll(resp.Body)
+	_data, err := io.ReadAll(resp.Body)
 
-	EDDN_CSV_DATA = string(data)
+	*data = string(_data)
 }
 
 func getHighestEDDNCount() int {

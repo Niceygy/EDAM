@@ -1,4 +1,4 @@
-fetch("data/messageCount.csv")
+fetch("/data/eddncsv")
   .then((response) => response.text())
   .then((csv) => {
     const lines = csv.trim().split("\n");
