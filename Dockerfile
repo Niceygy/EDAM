@@ -9,18 +9,20 @@ COPY go.mod go.sum ./
 COPY . .
 # Build the application
 # RUN go build -o edam .
-RUN CGO_ENABLED=0 GOOS=linux go build -o edam .
+RUN CGO_ENABLED=0 GOOS=linux go build -ldflags="-s -w" -o edam .
 # Use a minimal base image for final deployment
-FROM alpine:latest
+# FROM alpine:latest
+FROM gcr.io/distroless/static-debian12:nonroot
 # Set working directory in the container
 WORKDIR /root/
-# Copy the built binary from the builder stage
-COPY --from=builder /app/edam .
+
 COPY . .
+COPY --from=builder /app/edam .
+
 LABEL org.opencontainers.image.description="EDDataCollector"
 LABEL org.opencontainers.image.authors="Niceygy (Ava Whale)"
 
-RUN chmod 777 ./edam
+# RUN chmod 777 ./edam
 
 # Expose the application port
 EXPOSE 3696

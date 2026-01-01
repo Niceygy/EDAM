@@ -28,9 +28,6 @@ func serve() {
 	http.HandleFunc("/data/eddncsv", func(w http.ResponseWriter, r *http.Request) {
 		data := EDDN_CSV_DATA
 
-		// if err != nil {
-		// 	log.Println("ERR Open static/data/messageCount.csv: " + err.Error())
-		// }
 		fmt.Fprintln(w, string(data))
 	})
 
