@@ -3,15 +3,17 @@ const activityRatings = ["Inactive", "People are asleep! Or on holiday", "About 
 function setActivityMessage(rating) {
   var message = "";
 
+  rating = Math.round(rating);
+
   if (rating > 99) {
-    document.querySelector("body > div.main-flex > div > div:nth-child(2) > h3.activityRatingMessage").innerText = activityRatings[4];
+    document.getElementById("activityRatingMessage").innerText = `${activityRatings[4]} (${rating}% active)`;
   } else if (rating > 75) {
-    document.querySelector("body > div.main-flex > div > div:nth-child(2) > h3.activityRatingMessage").innerText = activityRatings[3];
+    document.getElementById("activityRatingMessage").innerText = `${activityRatings[3]} (${rating}% active)`;
   } else if (rating > 50) {
-    document.querySelector("body > div.main-flex > div > div:nth-child(2) > h3.activityRatingMessage").innerText = activityRatings[2];
+    document.getElementById("activityRatingMessage").innerText = `${activityRatings[2]} (${rating}% active)`;
   } else if (rating > 25) {
-    document.querySelector("body > div.main-flex > div > div:nth-child(2) > h3.activityRatingMessage").innerText = activityRatings[1];
+    document.getElementById("activityRatingMessage").innerText = `${activityRatings[1]} (${rating}% active)`;
   } else {
-    document.querySelector("body > div.main-flex > div > div:nth-child(2) > h3.activityRatingMessage").innerText = activityRatings[0];
+    document.getElementById("activityRatingMessage").innerText = `${activityRatings[0]} (${rating}% active)`;
   }
 }

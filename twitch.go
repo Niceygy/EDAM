@@ -27,6 +27,10 @@ var TWITCH_ACCESS_TOKEN_EXPIRY time.Time = time.Now()
 
 var TWITCH_ACCESS_TOKEN string = ""
 
+var TWITCH_VIEWER_COUNT int
+
+var TWITCH_VIEWER_COUNT_EXPIRY time.Time = time.Now()
+
 type TwitchAccessTokenResponse struct {
 	AccessToken string `json:"access_token"`
 	ExpiresIn   int    `json:"expires_in"`
@@ -91,7 +95,7 @@ func getTwitchAccessToken() string {
 
 }
 
-func getEliteStreamViewerCount() int {
+func updateEliteStreamViewerCount() int {
 
 	if TWITCH_ACCESS_TOKEN_EXPIRY.Unix() < time.Now().Unix() {
 		getTwitchAccessToken()
@@ -133,5 +137,16 @@ func getEliteStreamViewerCount() int {
 		count += entry.ViewerCount
 	}
 
+	TWITCH_VIEWER_COUNT = count
+	TWITCH_VIEWER_COUNT_EXPIRY = time.Now().Add(time.Minute * 15)
+
 	return count
+}
+
+func getEliteStreamViewerCount() int {
+	if TWITCH_VIEWER_COUNT_EXPIRY.Unix() < time.Now().Unix() {
+		updateEliteStreamViewerCount()
+	}
+
+	return TWITCH_VIEWER_COUNT
 }

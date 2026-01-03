@@ -39,6 +39,10 @@ func serve() {
 		fmt.Fprintln(w, overallActivityRating())
 	})
 
+	http.HandleFunc("/data/twitchcount", func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprintln(w, getEliteStreamViewerCount())
+	})
+
 	log.Println("Starting server on :3696")
 	if err := http.ListenAndServe(":3696", nil); err != nil {
 		log.Fatal(err)
