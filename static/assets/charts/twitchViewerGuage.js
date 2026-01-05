@@ -1,4 +1,5 @@
-var twitchViewerKnob = pureknob.createKnob(250, 250);
+var size = window.innerWidth < 768 ? 150 : 250;
+var twitchViewerKnob = pureknob.createKnob(size, size);
 twitchViewerKnob.setProperty("valMin", 0);
 twitchViewerKnob.setProperty("valMax", 1500);
 twitchViewerKnob.setProperty("angleStart", -0.75 * Math.PI);

@@ -15,3 +15,8 @@ function setActivityMessage(rating) {
     document.getElementById("activityRatingMessage").innerText = `${activityRatings[0]} (${rating}% active)`;
   }
 }
+
+fetch("/data/activityrating")
+  .then((response) => console.log(response.status) || response) // output the status and return response
+  .then((response) => response.text())
+  .then((response) => setActivityMessage(response));
