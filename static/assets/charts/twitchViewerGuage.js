@@ -1,6 +1,6 @@
 var twitchViewerKnob = pureknob.createKnob(250, 250);
 twitchViewerKnob.setProperty("valMin", 0);
-twitchViewerKnob.setProperty("valMax", 9000);
+twitchViewerKnob.setProperty("valMax", 1500);
 twitchViewerKnob.setProperty("angleStart", -0.75 * Math.PI);
 twitchViewerKnob.setProperty("angleEnd", 0.75 * Math.PI);
 twitchViewerKnob.setProperty("readonly", true);

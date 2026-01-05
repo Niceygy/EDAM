@@ -91,6 +91,10 @@ func getTwitchAccessToken() string {
 	TWITCH_ACCESS_TOKEN = data.AccessToken
 	TWITCH_ACCESS_TOKEN_EXPIRY = time.Now().Add(time.Duration(data.ExpiresIn) * time.Second)
 
+	if data.AccessToken == "" {
+		log.Panic("AccessToken is nil: " + string(body))
+	}
+
 	return data.AccessToken
 
 }

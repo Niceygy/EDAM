@@ -29,19 +29,21 @@
         </div>
         <div class="knob-section">
           <div id="twitchViewerGauge"></div>
-          <p class="knob-label"><i>Current Twitch Viewers (Updated Every 15m)</i></p>
+          <p class="knob-label"><i>Current Twitch Viewers (Updated Every ~15m)</i></p>
         </div>
         <div class="knob-side-content"></div>
       </div>
     </div>
 
     <div class="chartSelect" style="text-align: center">
-      <h3 class="activityRatingMessage" id="activityRatingMessage">T2</h3>
+      <h3 class="activityRatingMessage" id="activityRatingMessage">Loading...</h3>
 
       <p>EDDN Messages / Hour History</p>
       <select id="dateSelect" onchange="handleChartDateRangeChange()">
         <option value="">-- Choose a date range for the chart --</option>
         <option value="1d">1 Day</option>
+        <option value="2d">2 Days</option>
+        <option value="5d">5 Days</option>
         <option value="7d">7 Days</option>
         <option value="30d">30 Days</option>
         <option value="90d">90 Days</option>

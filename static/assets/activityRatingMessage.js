@@ -1,8 +1,6 @@
-const activityRatings = ["Inactive", "People are asleep! Or on holiday", "About normal", "Active! Have you checked galnet?", "Very active! Best check on the thargoids"];
+const activityRatings = ["Server hamsters must be asleep", "Off-Peak", "About normal", "Active! Have you checked galnet?", "Very active! Best check on salvation..."];
 
 function setActivityMessage(rating) {
-  var message = "";
-
   rating = Math.round(rating);
 
   if (rating > 99) {
