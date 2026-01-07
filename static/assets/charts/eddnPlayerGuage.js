@@ -9,6 +9,6 @@ var node = eddnPlayerKnob.node();
 var elem = document.getElementById("eddnNowGauge");
 elem.appendChild(node);
 fetch("/data/eddncount")
-  .then((response) => console.log(response.status) || response) // output the status and return response
+  .then((response) => console.log(response.status) || response)
   .then((response) => response.text())
   .then((response) => eddnPlayerKnob.setValue(response));

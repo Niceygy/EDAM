@@ -47,6 +47,7 @@ fetch("/data/eddncsv")
   });
 
 function getDataForxDays(days, csv) {
+  umami.track(`days=${days}`);
   var labels = [];
   var data = [];
   // Source - https://stackoverflow.com/a/1296374

@@ -5,9 +5,9 @@ function setActivityMessage(rating) {
 
   if (rating > 99) {
     document.getElementById("activityRatingMessage").innerText = `${activityRatings[4]} (${rating}% active)`;
-  } else if (rating > 75) {
+  } else if (rating > 70) {
     document.getElementById("activityRatingMessage").innerText = `${activityRatings[3]} (${rating}% active)`;
-  } else if (rating > 50) {
+  } else if (rating > 40) {
     document.getElementById("activityRatingMessage").innerText = `${activityRatings[2]} (${rating}% active)`;
   } else if (rating > 25) {
     document.getElementById("activityRatingMessage").innerText = `${activityRatings[1]} (${rating}% active)`;
@@ -17,6 +17,6 @@ function setActivityMessage(rating) {
 }
 
 fetch("/data/activityrating")
-  .then((response) => console.log(response.status) || response) // output the status and return response
+  .then((response) => console.log(response.status) || response)
   .then((response) => response.text())
   .then((response) => setActivityMessage(response));

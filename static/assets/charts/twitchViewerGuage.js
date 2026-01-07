@@ -9,6 +9,6 @@ var node = twitchViewerKnob.node();
 var elem = document.getElementById("twitchViewerGauge");
 elem.appendChild(node);
 fetch("/data/twitchcount")
-  .then((response) => console.log(response.status) || response) // output the status and return response
+  .then((response) => console.log(response.status) || response)
   .then((response) => response.text())
   .then((response) => twitchViewerKnob.setValue(response));

@@ -1,16 +1,12 @@
 <!DOCTYPE html>
 <html>
-  <script src="assets/onLoad.js"></script>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-
+  <link href="assets/style.css" rel="stylesheet" />
   <link rel="icon" href="assets/icons/favicon.svg" type="image/svg+xml" />
   <script defer src="https://data.niceygy.net/script.js" data-website-id="1fa1a451-b65f-4926-88a6-89465f0dd70f"></script>
   <script src="assets/min/pureknob.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script src="https://cdn.plot.ly/plotly-3.3.0.min.js"></script>
   <title>E.D.A.M</title>
 
-  <link href="assets/style.css" rel="stylesheet" />
   <script>
     function handleChartDateRangeChange() {
       var range = document.getElementById("dateSelect").value;
@@ -19,7 +15,6 @@
     }
   </script>
   <body>
-    <img id="loadingIcon" src="assets/icons/edloader.svg" width="50" height="50" />
     <div class="header" style="display: flex; text-align: center">
       <h1>E</h1>
       <p style="height: 100%; line-height: 380%">lite</p>
@@ -66,18 +61,17 @@
     </div>
 
     <div>
-      <p>Made with 🩷 & 💥, by <a href="https://niceygy.net">Niceygy</a>. <a href="/about.html">About</a></p>
+      <p>Made with 🩷 & 💥, by <a href="https://niceygy.net">Niceygy</a>. <a href="/about.html">About</a> / <a href="https://go.niceygy.net/support_me">Support Me</a></p>
     </div>
 
+    <script src="assets/charts/twitchViewerGuage.js"></script>
     <script src="assets/charts/steamPlayerGauge.js"></script>
     <script src="assets/charts/eddnChart.js"></script>
     <script src="assets/charts/eddnPlayerGuage.js"></script>
-    <script src="assets/charts/overallGuage.js"></script>
     <script src="assets/activityRatingMessage.js"></script>
-    <script src="assets/charts/twitchViewerGuage.js"></script>
 
     <script>
-      umami.Track("V0.1.0");
+      umami.track("V0.1.0");
     </script>
   </body>
 </html>
