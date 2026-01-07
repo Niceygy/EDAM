@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html>
   <script src="assets/onLoad.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
   <link rel="icon" href="assets/icons/favicon.svg" type="image/svg+xml" />
   <script defer src="https://data.niceygy.net/script.js" data-website-id="1fa1a451-b65f-4926-88a6-89465f0dd70f"></script>
   <script src="assets/min/pureknob.js"></script>
@@ -18,7 +20,6 @@
   </script>
   <body>
     <img id="loadingIcon" src="assets/icons/edloader.svg" width="50" height="50" />
-    <!-- <h1>E<i>lite </i>D<i>angerous </i>A<i>ctivity </i>M<i>onitor</i></h1> -->
     <div class="header" style="display: flex; text-align: center">
       <h1>E</h1>
       <p style="height: 100%; line-height: 380%">lite</p>
@@ -29,21 +30,19 @@
       <h1>.M</h1>
       <p style="height: 100%; line-height: 380%">onitor</p>
     </div>
-    <div class="main-flex" style="align-content: center">
-      <div class="knob-row">
-        <div class="knob-section">
-          <div id="steamPlayerGauge"></div>
-          <p class="knob-label"><i>Current Steam Players (Updated Every 15m)</i></p>
-        </div>
-        <div class="knob-section">
-          <div id="eddnNowGauge"></div>
-          <p class="knob-label"><i>Current EDDN Players (Updated Hourly)</i></p>
-        </div>
-        <div class="knob-section">
-          <div id="twitchViewerGauge"></div>
-          <p class="knob-label"><i>Current Twitch Viewers (Updated Every ~15m)</i></p>
-        </div>
-        <div class="knob-side-content"></div>
+
+    <div class="row">
+      <div class="column">
+        <div id="steamPlayerGauge"></div>
+        <p class="knob-label"><i>Current Steam Players (Updated Every 15m)</i></p>
+      </div>
+      <div class="column">
+        <div id="eddnNowGauge"></div>
+        <p class="knob-label"><i>Current EDDN Players (Updated Hourly)</i></p>
+      </div>
+      <div class="column">
+        <div id="twitchViewerGauge"></div>
+        <p class="knob-label"><i>Current Twitch Viewers (Updated Every ~15m)</i></p>
       </div>
     </div>
 
