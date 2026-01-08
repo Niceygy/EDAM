@@ -38,6 +38,16 @@ fetch("/data/eddncsv")
       options: {
         responsive: true,
         maintainAspectRatio: false,
+        plugins: {
+          tooltip: {
+            enabled: true,
+            callbacks: {
+              label: function (context) {
+                return context.dataset.label + ": " + context.parsed.y;
+              },
+            },
+          },
+        },
         scales: {
           y: { beginAtZero: true },
           x: { display: true, title: { display: true, text: "Time" } },
