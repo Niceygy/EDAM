@@ -71,7 +71,9 @@
     <script src="assets/activityRatingMessage.js"></script>
 
     <script>
-      umami.track("V0.1.0");
+      try {
+        umami.track(`V1.1.0`);
+      } catch (_) {}
     </script>
   </body>
 </html>

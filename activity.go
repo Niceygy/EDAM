@@ -38,7 +38,9 @@ func twitchActivityRating() float64 {
 }
 
 func overallActivityRating() float64 {
-	//20,000
+	if getEDStatus() != "Good" {
+		return 0
+	}
 
 	var eddn float64 = eddnActivityRating()
 	var steam float64 = steamActivityRating()

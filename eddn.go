@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
 	"log"
@@ -14,10 +15,17 @@ const EDDN_CSV_FILEPATH = "static/data/messageCount.csv"
 
 var EDDN_CSV_DATA string
 
+type EDStatusResponse struct {
+	Status  string `json:"status"`
+	Message string `json:"message"`
+	Code    int    `json:"code"`
+	Product string `json:"product"`
+}
+
 func EDDNCsvLoop(data *string) {
 	for {
 		downloadEDDNCsv(data)
-		time.Sleep(time.Minute * 30)
+		time.Sleep(time.Minute * 10)
 	}
 }
 
@@ -77,4 +85,23 @@ func getCurrentEDDNCount() string {
 	line := lines[0]
 
 	return strings.Split(line, ",")[1]
+}
+
+func getEDStatus() string {
+	req, err := http.NewRequest(http.MethodGet, "https://ed-server-status.orerve.net", nil)
+	if err != nil {
+		fmt.Printf("client: could not create request: %s\n", err)
+		return ""
+	}
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		fmt.Printf("client: error making http request: %s\n", err)
+		return ""
+	}
+	defer resp.Body.Close()
+	var r EDStatusResponse
+	if err := json.NewDecoder(resp.Body).Decode(&r); err != nil {
+		panic(err)
+	}
+	return r.Status
 }
