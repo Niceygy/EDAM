@@ -81,5 +81,8 @@ function getDataForxDays(days, csv) {
     }
   }
 
+labels.reverse();
+data.reverse()
+
   return [labels, data];
 }
