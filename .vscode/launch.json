@@ -10,7 +10,7 @@
       "request": "launch",
       "mode": "debug",
       "program": "${workspaceFolder}/src",
-      "cwd": "${workspaceFolder}/src",
+      "cwd": "${workspaceFolder}",
       "envFile": "${workspaceFolder}/.env"
     }
   ]

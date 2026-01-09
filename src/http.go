@@ -4,9 +4,13 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
+	"strings"
 
-	"golang.org/x/net/websocket"
+	"github.com/gorilla/websocket"
 )
+
+var upgrader = websocket.Upgrader{}
 
 func middleware(h http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -19,9 +23,14 @@ func middleware(h http.Handler) http.Handler {
 }
 
 func serve() {
-
+	cwd, err := os.Getwd()
+	if err != nil {
+		log.Panic(err)
+	} else if strings.Contains(cwd, "src") {
+		cwd = strings.Replace(cwd, "src", "", 1)
+	}
 	// Serve files from the "static" directory
-	http.Handle("/", middleware(http.FileServer(http.Dir("static"))))
+	http.Handle("/", middleware(http.FileServer(http.Dir(cwd+"/static"))))
 
 	http.HandleFunc("/data/steamcount", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintln(w, getSteamPlayerCount())
@@ -45,17 +54,22 @@ func serve() {
 		fmt.Fprintln(w, getEliteStreamViewerCount())
 	})
 
-	http.Handle("/ws", websocket.Handler(func(ws *websocket.Conn) {
+	http.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {
+		conn, err := upgrader.Upgrade(w, r, nil)
+		if err != nil {
+			log.Println(err)
+			return
+		}
 		go func() {
 			for {
-				uploaderID := <-uploaderChan
-				if err := websocket.Message.Send(ws, uploaderID); err != nil {
+				uploaderID := <-uploaderChannel
+				if err := conn.WriteMessage(websocket.TextMessage, []byte(uploaderID)); err != nil {
 					log.Println(err)
 					return
 				}
 			}
 		}()
-	}))
+	})
 
 	log.Println("Starting server on :3696")
 	if err := http.ListenAndServe(":3696", nil); err != nil {

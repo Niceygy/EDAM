@@ -6,7 +6,7 @@ import (
 
 func main() {
 	log.Println("Loading...")
-	// go eRelay()
+	go eRelay()
 	go EDDNCsvLoop(&EDDN_CSV_DATA)
 	serve()
 }

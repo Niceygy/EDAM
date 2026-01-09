@@ -24,7 +24,7 @@ type EDDNHeader struct {
 }
 
 var Uploaders []string
-var uploaderChan = make(chan string)
+var uploaderChannel = make(chan string)
 
 func eRelay() {
 	sub := zmq4.NewSub(context.Background())
@@ -60,7 +60,7 @@ func eRelay() {
 				continue
 			}
 
-			uploaderChan <- message.Header.UploaderID
+			uploaderChannel <- message.Header.UploaderID
 		}
 	}
 }
