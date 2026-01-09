@@ -41,6 +41,11 @@
       </div>
     </div>
 
+    <div class="liveUploader" style="text-align: center">
+      <p id="liveUploaderText">Live Uploaders: --</p>
+      <button id="liveUploaderBtn" onclick="toggleLiveUploaderCount()">Start live EDDN Count</button>
+    </div>
+
     <div class="chartSelect" style="text-align: center">
       <h3 class="activityRatingMessage" id="activityRatingMessage">Loading...</h3>
 
@@ -64,11 +69,12 @@
       <p>Made with 🩷 & 💥, by <a href="https://niceygy.net">Niceygy</a>. <a href="/about.html">About</a> / <a href="https://go.niceygy.net/support_me">Support Me</a></p>
     </div>
 
-    <script src="assets/charts/twitchViewerGuage.js"></script>
-    <script src="assets/charts/steamPlayerGauge.js"></script>
-    <script src="assets/charts/eddnChart.js"></script>
-    <script src="assets/charts/eddnPlayerGuage.js"></script>
-    <script src="assets/activityRatingMessage.js"></script>
+    <script src="assets/js/twitchViewerGuage.js"></script>
+    <script src="assets/js/liveUploaders.js"></script>
+    <script src="assets/js/steamPlayerGauge.js"></script>
+    <script src="assets/js/eddnChart.js"></script>
+    <script src="assets/js/eddnPlayerGuage.js"></script>
+    <script src="assets/js/activityRatingMessage.js"></script>
 
     <script>
       try {

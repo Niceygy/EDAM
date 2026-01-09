@@ -64,7 +64,7 @@ func serve() {
 			for {
 				uploaderID := <-uploaderChannel
 				if err := conn.WriteMessage(websocket.TextMessage, []byte(uploaderID)); err != nil {
-					log.Println(err)
+					// log.Println(err)
 					return
 				}
 			}
