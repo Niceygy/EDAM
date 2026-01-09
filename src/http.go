@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+
+	"golang.org/x/net/websocket"
 )
 
 func middleware(h http.Handler) http.Handler {
@@ -42,6 +44,18 @@ func serve() {
 	http.HandleFunc("/data/twitchcount", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintln(w, getEliteStreamViewerCount())
 	})
+
+	http.Handle("/ws", websocket.Handler(func(ws *websocket.Conn) {
+		go func() {
+			for {
+				uploaderID := <-uploaderChan
+				if err := websocket.Message.Send(ws, uploaderID); err != nil {
+					log.Println(err)
+					return
+				}
+			}
+		}()
+	}))
 
 	log.Println("Starting server on :3696")
 	if err := http.ListenAndServe(":3696", nil); err != nil {
