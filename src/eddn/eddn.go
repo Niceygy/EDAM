@@ -3,12 +3,10 @@ package eddn
 import (
 	"encoding/json"
 	"fmt"
-	"io"
 	"log"
 	"net/http"
 	"strconv"
 	"strings"
-	"time"
 )
 
 const EDDN_CSV_FILEPATH = "static/data/messageCount.csv"
@@ -22,35 +20,35 @@ type EDStatusResponse struct {
 	Product string `json:"product"`
 }
 
-func EDDNCsvLoop(data *string) {
-	for {
-		downloadEDDNCsv(data)
-		time.Sleep(time.Minute * 10)
-	}
-}
+// func EDDNCsvLoop(data *string) {
+// 	for {
+// 		downloadEDDNCsv(data)
+// 		time.Sleep(time.Minute * 10)
+// 	}
+// }
 
-func downloadEDDNCsv(data *string) {
-	req, err := http.NewRequest(http.MethodGet, "https://niceygy.net/experiments/edam/data.csv", nil)
-	if err != nil {
-		fmt.Printf("client: could not create request: %s\n", err)
-		return
-	}
-	resp, err := http.DefaultClient.Do(req)
-	if err != nil {
-		fmt.Printf("client: error making http request: %s\n", err)
-		return
-	}
-	defer resp.Body.Close()
+// func downloadEDDNCsv(data *string) {
+// 	req, err := http.NewRequest(http.MethodGet, "https://niceygy.net/experiments/edam/data.csv", nil)
+// 	if err != nil {
+// 		fmt.Printf("client: could not create request: %s\n", err)
+// 		return
+// 	}
+// 	resp, err := http.DefaultClient.Do(req)
+// 	if err != nil {
+// 		fmt.Printf("client: error making http request: %s\n", err)
+// 		return
+// 	}
+// 	defer resp.Body.Close()
 
-	if resp.StatusCode != http.StatusOK {
-		fmt.Printf("client: bad status code: %d\n", resp.StatusCode)
-		return
-	}
+// 	if resp.StatusCode != http.StatusOK {
+// 		fmt.Printf("client: bad status code: %d\n", resp.StatusCode)
+// 		return
+// 	}
 
-	_data, err := io.ReadAll(resp.Body)
+// 	_data, err := io.ReadAll(resp.Body)
 
-	*data = string(_data)
-}
+// 	*data = string(_data)
+// }
 
 func GetHighestEDDNCount() int {
 	stringdata := EDDN_CSV_DATA
@@ -62,7 +60,7 @@ func GetHighestEDDNCount() int {
 		line := lines[i]
 
 		if line == "" {
-			break
+			continue
 		}
 
 		count, err := strconv.Atoi(strings.Split(line, ",")[1])
@@ -82,7 +80,11 @@ func GetCurrentEDDNCount() string {
 	stringdata := EDDN_CSV_DATA
 
 	lines := strings.Split(stringdata, "\n")
-	line := lines[0]
+	line := lines[len(lines)-1]
+
+	if line == "" {
+		return "0"
+	}
 
 	return strings.Split(line, ",")[1]
 }

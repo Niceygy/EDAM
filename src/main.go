@@ -9,7 +9,8 @@ import (
 
 func main() {
 	log.Println("Loading...")
+	// go LogtideStart()
 	go eddn.EDDNListener()
-	go eddn.EDDNCsvLoop(&eddn.EDDN_CSV_DATA)
+	// go eddn.EDDNCsvLoop(&eddn.EDDN_CSV_DATA)
 	web.Serve()
 }
