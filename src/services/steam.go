@@ -1,4 +1,4 @@
-package main
+package services
 
 import (
 	"encoding/json"
@@ -17,7 +17,7 @@ type Response struct {
 var LAST_FETCHED time.Time = time.Now()
 var CACHED_COUNT int = fetchSteamPlayerCount()
 
-func getSteamPlayerCount() int {
+func GetSteamPlayerCount() int {
 	now := time.Now()
 	if now.Sub(LAST_FETCHED).Minutes() > 15 {
 		CACHED_COUNT = fetchSteamPlayerCount()

@@ -1,4 +1,4 @@
-package main
+package services
 
 import (
 	"encoding/json"
@@ -147,7 +147,7 @@ func updateEliteStreamViewerCount() int {
 	return count
 }
 
-func getEliteStreamViewerCount() int {
+func GetEliteStreamViewerCount() int {
 	if TWITCH_VIEWER_COUNT_EXPIRY.Unix() < time.Now().Unix() {
 		updateEliteStreamViewerCount()
 	}

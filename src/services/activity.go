@@ -1,19 +1,21 @@
-package main
+package services
 
 import (
 	"math"
 	"strconv"
+
+	"github.com/niceygy/edam/eddn"
 )
 
 func eddnActivityRating() float64 {
-	var largest int = getHighestEDDNCount()
-	current, _ := strconv.Atoi(getCurrentEDDNCount())
+	var largest int = eddn.GetHighestEDDNCount()
+	current, _ := strconv.Atoi(eddn.GetCurrentEDDNCount())
 
 	return (float64(current) / float64(largest)) * 100
 }
 
 func steamActivityRating() float64 {
-	var current int = getSteamPlayerCount()
+	var current int = GetSteamPlayerCount()
 	var largest float64 = 25000
 
 	return (float64(current) / largest) * 100
@@ -22,7 +24,7 @@ func steamActivityRating() float64 {
 func twitchActivityRating() float64 {
 	//use log scale
 
-	var current int = getEliteStreamViewerCount()
+	var current int = GetEliteStreamViewerCount()
 	var largest float64 = 10000
 
 	if current <= 0 {
@@ -37,8 +39,8 @@ func twitchActivityRating() float64 {
 	return ((log_value - log_min) / (log_max - log_min)) * 100
 }
 
-func overallActivityRating() float64 {
-	if getEDStatus() != "Good" {
+func OverallActivityRating() float64 {
+	if eddn.GetEDStatus() != "Good" {
 		return 0
 	}
 

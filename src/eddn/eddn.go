@@ -1,4 +1,4 @@
-package main
+package eddn
 
 import (
 	"encoding/json"
@@ -52,7 +52,7 @@ func downloadEDDNCsv(data *string) {
 	*data = string(_data)
 }
 
-func getHighestEDDNCount() int {
+func GetHighestEDDNCount() int {
 	stringdata := EDDN_CSV_DATA
 
 	lines := strings.Split(stringdata, "\n")
@@ -78,7 +78,7 @@ func getHighestEDDNCount() int {
 	return largest
 }
 
-func getCurrentEDDNCount() string {
+func GetCurrentEDDNCount() string {
 	stringdata := EDDN_CSV_DATA
 
 	lines := strings.Split(stringdata, "\n")
@@ -87,7 +87,7 @@ func getCurrentEDDNCount() string {
 	return strings.Split(line, ",")[1]
 }
 
-func getEDStatus() string {
+func GetEDStatus() string {
 	req, err := http.NewRequest(http.MethodGet, "https://ed-server-status.orerve.net", nil)
 	if err != nil {
 		fmt.Printf("client: could not create request: %s\n", err)

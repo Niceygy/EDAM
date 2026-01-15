@@ -18,8 +18,6 @@ function toggleLiveUploaderCount() {
       if (isLiveUploaderCountActive) {
         if (!seenUploaders.includes(e.data)) {
           seenUploaders.push(e.data);
-        } else {
-          console.log("no");
         }
 
         document.getElementById("liveUploaderText").innerText = `Live Uploaders: ${seenUploaders.length}`;

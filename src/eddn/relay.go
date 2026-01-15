@@ -1,4 +1,4 @@
-package main
+package eddn
 
 import (
 	"bytes"
@@ -11,7 +11,7 @@ import (
 	"github.com/go-zeromq/zmq4"
 )
 
-type EDDN struct {
+type EDDNMessage struct {
 	SchemaRef string          `json:"$schemaRef"`
 	Header    EDDNHeader      `json:"header"`
 	Message   json.RawMessage `json:"message"`
@@ -23,10 +23,10 @@ type EDDNHeader struct {
 	GatewayTimestamp time.Time `json:"gatewayTimestamp"`
 }
 
-var Uploaders []string
-var uploaderChannel = make(chan string)
+// var Uploaders []string
+var UploaderChannel = make(chan string)
 
-func eRelay() {
+func EDDNListener() {
 	sub := zmq4.NewSub(context.Background())
 	defer sub.Close()
 
@@ -44,35 +44,33 @@ func eRelay() {
 
 	run := true
 	for run {
-		select {
-		default:
-			msg, err := sub.Recv()
-			if err != nil {
-				fmt.Println(err.Error())
-				run = false
-				continue
-			}
-
-			message, err := decodeMessage(msg.Frames[0])
-			if err != nil {
-				fmt.Println(err.Error())
-				run = false
-				continue
-			}
-
-			uploaderChannel <- message.Header.UploaderID
+		//for each message
+		msg, err := sub.Recv()
+		if err != nil {
+			fmt.Println(err.Error())
+			run = false
+			continue
 		}
+
+		message, err := decodeMessage(msg.Frames[0])
+		if err != nil {
+			fmt.Println(err.Error())
+			run = false
+			continue
+		}
+
+		UploaderChannel <- message.Header.UploaderID
 	}
 }
 
-func decodeMessage(rawMessage []byte) (*EDDN, error) {
+func decodeMessage(rawMessage []byte) (*EDDNMessage, error) {
 	r, err := zlib.NewReader(bytes.NewReader(rawMessage))
 	if err != nil {
 		return nil, err
 	}
 	defer r.Close()
 
-	var message EDDN
+	var message EDDNMessage
 	err = json.NewDecoder(r).Decode(&message)
 	if err != nil {
 		return nil, err

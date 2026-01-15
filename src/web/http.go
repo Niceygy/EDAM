@@ -1,4 +1,4 @@
-package main
+package web
 
 import (
 	"fmt"
@@ -8,6 +8,8 @@ import (
 	"strings"
 
 	"github.com/gorilla/websocket"
+	"github.com/niceygy/edam/eddn"
+	"github.com/niceygy/edam/services"
 )
 
 var upgrader = websocket.Upgrader{}
@@ -22,7 +24,7 @@ func middleware(h http.Handler) http.Handler {
 	})
 }
 
-func serve() {
+func Serve() {
 	cwd, err := os.Getwd()
 	if err != nil {
 		log.Panic(err)
@@ -33,25 +35,25 @@ func serve() {
 	http.Handle("/", middleware(http.FileServer(http.Dir(cwd+"/static"))))
 
 	http.HandleFunc("/data/steamcount", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintln(w, getSteamPlayerCount())
+		fmt.Fprintln(w, services.GetSteamPlayerCount())
 	})
 
 	http.HandleFunc("/data/eddncsv", func(w http.ResponseWriter, r *http.Request) {
-		data := EDDN_CSV_DATA
+		data := eddn.EDDN_CSV_DATA
 
 		fmt.Fprintln(w, string(data))
 	})
 
 	http.HandleFunc("/data/eddncount", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintln(w, getCurrentEDDNCount())
+		fmt.Fprintln(w, eddn.GetCurrentEDDNCount())
 	})
 
 	http.HandleFunc("/data/activityrating", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintln(w, overallActivityRating())
+		fmt.Fprintln(w, services.OverallActivityRating())
 	})
 
 	http.HandleFunc("/data/twitchcount", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintln(w, getEliteStreamViewerCount())
+		fmt.Fprintln(w, services.GetEliteStreamViewerCount())
 	})
 
 	http.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {
@@ -62,7 +64,7 @@ func serve() {
 		}
 		go func() {
 			for {
-				uploaderID := <-uploaderChannel
+				uploaderID := <-eddn.UploaderChannel
 				if err := conn.WriteMessage(websocket.TextMessage, []byte(uploaderID)); err != nil {
 					// log.Println(err)
 					return
