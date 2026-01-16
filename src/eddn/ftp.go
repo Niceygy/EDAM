@@ -72,7 +72,7 @@ func restoreFromFTP(returnNotRestore bool) []UploaderEntry {
 		result = append(result, entry)
 	}
 
-	log.Println("Restored from CSV")
+	log.Println("Restored from FTP")
 
 	if returnNotRestore {
 		return result
@@ -152,6 +152,6 @@ func csvBackupHandler() {
 		conn.Logout()
 		conn.Quit()
 
-		log.Println("Saved to CSV")
+		log.Println("Saved to CSV. Saw " + strconv.Itoa(int(average)) + " average uploaders in the past hour")
 	}
 }

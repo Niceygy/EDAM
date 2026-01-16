@@ -6,9 +6,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"log"
 	"slices"
-	"strconv"
 	"time"
 
 	"github.com/go-zeromq/zmq4"
@@ -35,6 +33,7 @@ func EDDNListener() {
 	go eddnMessageHandler()
 	go csvBackupHandler()
 
+	//open the connection
 	sub := zmq4.NewSub(context.Background())
 	defer sub.Close()
 
@@ -118,6 +117,6 @@ func onTheRefreshHandler() {
 		UPLOADERS_PAST_HOUR = append(UPLOADERS_PAST_HOUR, entry)
 		UPLOADERS_SINCE_REFRESH = []string{}
 
-		log.Println("Seen " + strconv.Itoa(entry.Uploaders) + " in the past minute")
+		// log.Println("Seen " + strconv.Itoa(entry.Uploaders) + " in the past minute")
 	}
 }
