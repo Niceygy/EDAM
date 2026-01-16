@@ -6,19 +6,11 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"log"
 	"slices"
-	"strconv"
-	"strings"
 	"time"
 
 	"github.com/go-zeromq/zmq4"
 )
-
-const UPLOADER_COUNT_TIME time.Duration = time.Minute * 1
-const EDDN_CSV_BACKUP_INTERVAL time.Duration = time.Hour * 1
-
-var UPLOADERS_SINCE_REFRESH []string
 
 type EDDNMessage struct {
 	SchemaRef string          `json:"$schemaRef"`
@@ -34,10 +26,12 @@ type EDDNHeader struct {
 
 var UploaderChannel = make(chan string)
 
+/*Entrypoint. Connects to EDDN and launches all related goroutines*/
 func EDDNListener() {
-	restoreFromFTP()
+	restoreFromFTP(false)
 	go onTheRefreshHandler()
 	go eddnMessageHandler()
+	go csvBackupHandler()
 
 	sub := zmq4.NewSub(context.Background())
 	defer sub.Close()
@@ -92,6 +86,11 @@ func decodeMessage(rawMessage []byte) (*EDDNMessage, error) {
 	return &message, nil
 }
 
+/*
+Manages the UPLOADERS_SINCE_REFRESH list.
+If it sees a uploaderID that isn't in the list,
+it adds it.
+*/
 func eddnMessageHandler() {
 	for {
 		uploaderID := <-UploaderChannel
@@ -101,17 +100,20 @@ func eddnMessageHandler() {
 	}
 }
 
+/*
+Every UPLOADER_COUNT_TIME, updates the UPLOADERS_PAST_HOUR
+with data from the UPLOADERS_SINCE_REFRESH slice and
+clears it.
+*/
 func onTheRefreshHandler() {
 	for {
 		time.Sleep(UPLOADER_COUNT_TIME)
-		EDDN_CSV_DATA = strings.Join([]string{
-			EDDN_CSV_DATA,
-			"\n",
-			strconv.FormatInt(time.Now().Unix(), 10),
-			",",
-			strconv.Itoa(len(UPLOADERS_SINCE_REFRESH)),
-		}, "")
-		log.Println("Seen " + strconv.Itoa(len(UPLOADERS_SINCE_REFRESH)) + " Uploaders in the past 1m")
+
+		var entry UploaderEntry
+		entry.Timestamp = time.Now()
+		entry.Uploaders = len(UPLOADERS_SINCE_REFRESH)
+
+		UPLOADERS_PAST_HOUR = append(UPLOADERS_PAST_HOUR, entry)
 		UPLOADERS_SINCE_REFRESH = []string{}
 	}
 }

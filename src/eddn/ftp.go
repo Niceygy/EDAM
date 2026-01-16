@@ -4,7 +4,10 @@ import (
 	"bytes"
 	"io"
 	"log"
+	"math"
 	"os"
+	"strconv"
+	"strings"
 	"time"
 
 	"github.com/jlaffaye/ftp"
@@ -20,8 +23,8 @@ func getEnvVar(key string) string {
 	}
 }
 
-func restoreFromFTP() {
-	c, err := ftp.Dial(getEnvVar("FTP_ADDR")+":21", ftp.DialWithTimeout(5*time.Second))
+func openFTP() *ftp.ServerConn {
+	c, err := ftp.Dial(getEnvVar("FTP_ADDRESS")+":21", ftp.DialWithTimeout(5*time.Second))
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -30,43 +33,114 @@ func restoreFromFTP() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	r, err := c.Retr("test-file.txt")
+	return c
+}
+
+func restoreFromFTP(returnNotRestore bool) []UploaderEntry {
+	conn := openFTP()
+	r, err := conn.Retr(getEnvVar("FTP_FULLPATH"))
 	if err != nil {
 		panic(err)
 	}
 	defer r.Close()
 
 	buf, err := io.ReadAll(r)
-	EDDN_CSV_DATA = string(buf)
+	data := strings.Split(string(buf), "\n")
+
+	var result []UploaderEntry
+
+	for i := range data {
+		line := data[i]
+
+		_time, err := strconv.ParseInt(strings.Split(line, ",")[0], 10, 64)
+		if err != nil {
+			panic(err)
+		}
+
+		var entry UploaderEntry
+		entry.Timestamp = time.Unix(int64(_time), 0)
+		entry.Uploaders, err = strconv.Atoi(strings.Split(line, ",")[1])
+
+		if err != nil {
+			panic(err)
+		}
+
+		result = append(result, entry)
+	}
+
+	if returnNotRestore {
+		return result
+	} else {
+		UPLOADERS_ALL_TIME = result
+		return []UploaderEntry{}
+	}
+
 }
 
+/*
+Handles:
+
+- Adveraging the data from UPLOADERS_PAST_HOUR,
+
+- Putting that data into UPLOADERS_ALL_TIME,
+
+- Making a CSV file out of UPLOADERS_ALL_TIME,
+
+- Saving that CSV to the FTP server
+*/
 func csvBackupHandler() {
 	for {
 		time.Sleep(EDDN_CSV_BACKUP_INTERVAL)
 
-		c, err := ftp.Dial(getEnvVar("FTP_ADDR")+":21", ftp.DialWithTimeout(5*time.Second))
-		if err != nil {
-			log.Fatal(err)
+		//average the data from UPLOADERS_PAST_HOUR
+
+		var totalUploaders int64
+
+		for i := range UPLOADERS_PAST_HOUR {
+			entry := UPLOADERS_PAST_HOUR[i]
+
+			totalUploaders += int64(entry.Uploaders)
 		}
 
-		err = c.Login(getEnvVar("FTP_USERNAME"), getEnvVar("FTP_PASSWORD"))
-		if err != nil {
-			log.Fatal(err)
-		}
+		average := math.Round(float64(totalUploaders / 60))
 
-		err = c.Delete(getEnvVar("FTP_FULLPATH"))
+		var entry UploaderEntry
+		entry.Timestamp = time.Now()
+		entry.Uploaders = int(average)
+
+		// get the old CSV & update it
+
+		var oldCSV []UploaderEntry = restoreFromFTP(true)
+		var newCSV []UploaderEntry = append(oldCSV, entry)
+
+		//convert it back to a string
+
+		var stringCSV string
+
+		for i := range newCSV {
+			stringCSV += strings.Join([]string{
+				strconv.Itoa(int(newCSV[i].Timestamp.Unix())),
+				",",
+				strconv.Itoa(newCSV[i].Uploaders),
+				"\n",
+			}, "")
+		}
+		//save it
+
+		conn := openFTP()
+		err := conn.Delete(getEnvVar("FTP_FULLPATH"))
 
 		if err != nil {
 			log.Panic(err)
 		}
 
-		data := bytes.NewBufferString(EDDN_CSV_DATA)
-		err = c.Stor(getEnvVar("FTP_FULLPATH"), data)
+		data := bytes.NewBufferString(stringCSV)
+		err = conn.Stor(getEnvVar("FTP_FULLPATH"), data)
 		if err != nil {
 			panic(err)
 		}
 
-		c.Logout()
-		c.Quit()
+		conn.Logout()
+		conn.Quit()
 	}
 }

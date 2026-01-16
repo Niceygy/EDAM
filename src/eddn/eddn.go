@@ -3,81 +3,28 @@ package eddn
 import (
 	"encoding/json"
 	"fmt"
-	"log"
 	"net/http"
-	"strconv"
 	"strings"
 )
 
-const EDDN_CSV_FILEPATH = "static/data/messageCount.csv"
-
-var EDDN_CSV_DATA string
-
-type EDStatusResponse struct {
-	Status  string `json:"status"`
-	Message string `json:"message"`
-	Code    int    `json:"code"`
-	Product string `json:"product"`
-}
-
-// func EDDNCsvLoop(data *string) {
-// 	for {
-// 		downloadEDDNCsv(data)
-// 		time.Sleep(time.Minute * 10)
-// 	}
-// }
-
-// func downloadEDDNCsv(data *string) {
-// 	req, err := http.NewRequest(http.MethodGet, "https://niceygy.net/experiments/edam/data.csv", nil)
-// 	if err != nil {
-// 		fmt.Printf("client: could not create request: %s\n", err)
-// 		return
-// 	}
-// 	resp, err := http.DefaultClient.Do(req)
-// 	if err != nil {
-// 		fmt.Printf("client: error making http request: %s\n", err)
-// 		return
-// 	}
-// 	defer resp.Body.Close()
-
-// 	if resp.StatusCode != http.StatusOK {
-// 		fmt.Printf("client: bad status code: %d\n", resp.StatusCode)
-// 		return
-// 	}
-
-// 	_data, err := io.ReadAll(resp.Body)
-
-// 	*data = string(_data)
-// }
-
+/*
+Returns the highest number of hourly users
+ever seen on the EDDN (by the app)
+*/
 func GetHighestEDDNCount() int {
-	stringdata := EDDN_CSV_DATA
-
-	lines := strings.Split(stringdata, "\n")
-	largest := 0
-
-	for i := range lines {
-		line := lines[i]
-
-		if line == "" {
-			continue
-		}
-
-		count, err := strconv.Atoi(strings.Split(line, ",")[1])
-		if err != nil {
-			log.Panic(err.Error())
-		}
-
-		if count > largest {
-			largest = count
+	highest := 0
+	for _, v := range UPLOADERS_ALL_TIME {
+		if v.Uploaders > highest {
+			highest = v.Uploaders
 		}
 	}
 
-	return largest
+	return highest
 }
 
+/*Returns the last hourly count for EDDN*/
 func GetCurrentEDDNCount() string {
-	stringdata := EDDN_CSV_DATA
+	stringdata := CSV_FOR_FTP
 
 	lines := strings.Split(stringdata, "\n")
 	line := lines[len(lines)-1]
@@ -89,21 +36,27 @@ func GetCurrentEDDNCount() string {
 	return strings.Split(line, ",")[1]
 }
 
-func GetEDStatus() string {
+/*Is ED online?*/
+func GetEDStatus() EDState {
 	req, err := http.NewRequest(http.MethodGet, "https://ed-server-status.orerve.net", nil)
 	if err != nil {
 		fmt.Printf("client: could not create request: %s\n", err)
-		return ""
+		return EDStateOffline
 	}
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
 		fmt.Printf("client: error making http request: %s\n", err)
-		return ""
+		return EDStateOffline
 	}
 	defer resp.Body.Close()
 	var r EDStatusResponse
 	if err := json.NewDecoder(resp.Body).Decode(&r); err != nil {
 		panic(err)
 	}
-	return r.Status
+
+	if r.Status == "Good" {
+		return EDStateOnline
+	} else {
+		return EDStateOffline
+	}
 }

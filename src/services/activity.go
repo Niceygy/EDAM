@@ -40,7 +40,7 @@ func twitchActivityRating() float64 {
 }
 
 func OverallActivityRating() float64 {
-	if eddn.GetEDStatus() != "Good" {
+	if eddn.GetEDStatus() != eddn.EDStateOnline {
 		return 0
 	}
 

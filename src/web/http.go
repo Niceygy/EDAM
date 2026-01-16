@@ -39,7 +39,7 @@ func Serve() {
 	})
 
 	http.HandleFunc("/data/eddncsv", func(w http.ResponseWriter, r *http.Request) {
-		data := eddn.EDDN_CSV_DATA
+		data := eddn.CSV_FOR_FTP
 
 		fmt.Fprintln(w, string(data))
 	})
