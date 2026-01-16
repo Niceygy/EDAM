@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"strings"
+	"strconv"
 )
 
 /*
@@ -24,16 +24,7 @@ func GetHighestEDDNCount() int {
 
 /*Returns the last hourly count for EDDN*/
 func GetCurrentEDDNCount() string {
-	stringdata := CSV_FOR_FTP
-
-	lines := strings.Split(stringdata, "\n")
-	line := lines[len(lines)-1]
-
-	if line == "" {
-		return "0"
-	}
-
-	return strings.Split(line, ",")[1]
+	return strconv.Itoa(UPLOADERS_ALL_TIME[len(UPLOADERS_ALL_TIME)-1].Uploaders)
 }
 
 /*Is ED online?*/

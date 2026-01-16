@@ -14,7 +14,7 @@ type UploaderEntry struct {
 const UPLOADER_COUNT_TIME time.Duration = time.Minute * 1
 
 /*How often should UPLOADERS_PAST_HOUR be updated and saved to FTP?*/
-const EDDN_CSV_BACKUP_INTERVAL time.Duration = time.Minute * 2
+const EDDN_CSV_BACKUP_INTERVAL time.Duration = time.Hour * 1
 
 /*String list of all uploader IDs since last refresh*/
 var UPLOADERS_SINCE_REFRESH []string

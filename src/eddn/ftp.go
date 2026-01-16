@@ -52,6 +52,10 @@ func restoreFromFTP(returnNotRestore bool) []UploaderEntry {
 	for i := range data {
 		line := data[i]
 
+		if line == "" {
+			continue
+		}
+
 		_time, err := strconv.ParseInt(strings.Split(line, ",")[0], 10, 64)
 		if err != nil {
 			panic(err)
@@ -67,6 +71,8 @@ func restoreFromFTP(returnNotRestore bool) []UploaderEntry {
 
 		result = append(result, entry)
 	}
+
+	log.Println("Restored from CSV")
 
 	if returnNotRestore {
 		return result
@@ -102,7 +108,9 @@ func csvBackupHandler() {
 			totalUploaders += int64(entry.Uploaders)
 		}
 
-		average := math.Round(float64(totalUploaders / 60))
+		average := float64(totalUploaders / int64(len(UPLOADERS_PAST_HOUR)))
+		average = math.Round(average)
+		UPLOADERS_PAST_HOUR = []UploaderEntry{}
 
 		var entry UploaderEntry
 		entry.Timestamp = time.Now()
@@ -134,6 +142,7 @@ func csvBackupHandler() {
 			log.Panic(err)
 		}
 
+		CSV_FOR_FTP = stringCSV
 		data := bytes.NewBufferString(stringCSV)
 		err = conn.Stor(getEnvVar("FTP_FULLPATH"), data)
 		if err != nil {
@@ -142,5 +151,7 @@ func csvBackupHandler() {
 
 		conn.Logout()
 		conn.Quit()
+
+		log.Println("Saved to CSV")
 	}
 }
