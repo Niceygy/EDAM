@@ -1,6 +1,9 @@
 package eddn
 
-import "time"
+import (
+	"encoding/json"
+	"time"
+)
 
 /*
 Single uploader entry with FSDMessages
@@ -59,3 +62,24 @@ const (
 	EDStateOnline  EDState = true
 	EDStateOffline EDState = false
 )
+
+type EDMessageType int8
+
+const (
+	EDMessage_FSD    EDMessageType = 0
+	EDMessage_Docked EDMessageType = 1
+	EDMessage_Other  EDMessageType = 2
+)
+
+type EDDNMessage struct {
+	SchemaRef string          `json:"$schemaRef"`
+	Header    EDDNHeader      `json:"header"`
+	Message   json.RawMessage `json:"message"`
+	Event     EDMessageType
+}
+type EDDNHeader struct {
+	UploaderID       string    `json:"uploaderID"`
+	SoftwareName     string    `json:"softwareName"`
+	SoftwareVersion  string    `json:"softwareVersion"`
+	GatewayTimestamp time.Time `json:"gatewayTimestamp"`
+}

@@ -11,20 +11,7 @@ import (
 	"github.com/go-zeromq/zmq4"
 )
 
-type EDDNMessage struct {
-	SchemaRef string          `json:"$schemaRef"`
-	Header    EDDNHeader      `json:"header"`
-	Message   json.RawMessage `json:"message"`
-	Event     string
-}
-type EDDNHeader struct {
-	UploaderID       string    `json:"uploaderID"`
-	SoftwareName     string    `json:"softwareName"`
-	SoftwareVersion  string    `json:"softwareVersion"`
-	GatewayTimestamp time.Time `json:"gatewayTimestamp"`
-}
-
-// var UploaderChannel = make(chan string)
+var UploaderChannel = make(chan string)
 
 /*Entrypoint. Connects to EDDN and launches all related goroutines*/
 func EDDNListener() {
@@ -66,7 +53,7 @@ func EDDNListener() {
 			continue
 		}
 
-		if message.Event == "FSDJump" {
+		if message.Event == EDMessage_FSD {
 			UPLOADERS_SINCE_REFRESH++
 		}
 	}
@@ -92,25 +79,18 @@ func decodeMessage(rawMessage []byte) (*EDDNMessage, error) {
 		return nil, fmt.Errorf("failed to unmarshal inner message: %w", err)
 	}
 	if event, ok := inner["event"]; ok {
-		message.Event = event.(string)
+		switch event.(string) {
+		case "FSDJump":
+			message.Event = EDMessage_FSD
+		case "DockingGranted", "DockingDenied":
+			message.Event = EDMessage_Docked
+		default:
+			message.Event = EDMessage_Other
+		}
 	}
 
 	return &message, nil
 }
-
-// /*
-// Manages the UPLOADERS_SINCE_REFRESH list.
-// If it sees a uploaderID that isn't in the list,
-// it adds it.
-// */
-// func eddnMessageHandler() {
-// 	for {
-// 		uploaderID := <-UploaderChannel
-// 		if !slices.Contains(UPLOADERS_SINCE_REFRESH, uploaderID) {
-// 			UPLOADERS_SINCE_REFRESH = append(UPLOADERS_SINCE_REFRESH, uploaderID)
-// 		}
-// 	}
-// }
 
 /*
 Every UPLOADER_COUNT_TIME, updates the UPLOADERS_PAST_HOUR
