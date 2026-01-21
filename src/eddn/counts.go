@@ -3,11 +3,16 @@ package eddn
 import "time"
 
 /*
-Single uploader entry with uploaders
-seen and timestamp when it was measured
+Single uploader entry with FSDMessages
+seen and timestamp when it was measured.
+
+FSDMessages are used becuase they provide
+a good approxomation for the activity of a user.
+
+Different ones may be used in the future.
 */
 type UploaderEntry struct {
-	Uploaders int
+	Messages  int
 	Timestamp time.Time
 }
 
@@ -17,7 +22,7 @@ const UPLOADER_COUNT_TIME time.Duration = time.Minute * 1
 const EDDN_CSV_BACKUP_INTERVAL time.Duration = time.Hour * 1
 
 /*String list of all uploader IDs since last refresh*/
-var UPLOADERS_SINCE_REFRESH []string
+var UPLOADERS_SINCE_REFRESH int
 
 /*
 UploaderEntry list with the number of uploaders

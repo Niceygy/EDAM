@@ -45,6 +45,11 @@ func restoreFromFTP(returnNotRestore bool) []UploaderEntry {
 	defer r.Close()
 
 	buf, err := io.ReadAll(r)
+	if (string(buf)) == "" {
+		UPLOADERS_ALL_TIME = []UploaderEntry{}
+		log.Println("Skipped FTP restore (no data found)")
+		return []UploaderEntry{}
+	}
 	data := strings.Split(string(buf), "\n")
 
 	var result []UploaderEntry
@@ -63,7 +68,7 @@ func restoreFromFTP(returnNotRestore bool) []UploaderEntry {
 
 		var entry UploaderEntry
 		entry.Timestamp = time.Unix(int64(_time), 0)
-		entry.Uploaders, err = strconv.Atoi(strings.Split(line, ",")[1])
+		entry.Messages, err = strconv.Atoi(strings.Split(line, ",")[1])
 
 		if err != nil {
 			panic(err)
@@ -105,7 +110,7 @@ func csvBackupHandler() {
 		for i := range UPLOADERS_PAST_HOUR {
 			entry := UPLOADERS_PAST_HOUR[i]
 
-			totalUploaders += int64(entry.Uploaders)
+			totalUploaders += int64(entry.Messages)
 		}
 
 		average := float64(totalUploaders / int64(len(UPLOADERS_PAST_HOUR)))
@@ -114,7 +119,7 @@ func csvBackupHandler() {
 
 		var entry UploaderEntry
 		entry.Timestamp = time.Now()
-		entry.Uploaders = int(average)
+		entry.Messages = int(average)
 
 		// get the old CSV & update it
 
@@ -129,7 +134,7 @@ func csvBackupHandler() {
 			stringCSV += strings.Join([]string{
 				strconv.Itoa(int(newCSV[i].Timestamp.Unix())),
 				",",
-				strconv.Itoa(newCSV[i].Uploaders),
+				strconv.Itoa(newCSV[i].Messages),
 				"\n",
 			}, "")
 		}

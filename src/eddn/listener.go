@@ -6,7 +6,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"slices"
 	"time"
 
 	"github.com/go-zeromq/zmq4"
@@ -16,6 +15,7 @@ type EDDNMessage struct {
 	SchemaRef string          `json:"$schemaRef"`
 	Header    EDDNHeader      `json:"header"`
 	Message   json.RawMessage `json:"message"`
+	Event     string
 }
 type EDDNHeader struct {
 	UploaderID       string    `json:"uploaderID"`
@@ -24,13 +24,13 @@ type EDDNHeader struct {
 	GatewayTimestamp time.Time `json:"gatewayTimestamp"`
 }
 
-var UploaderChannel = make(chan string)
+// var UploaderChannel = make(chan string)
 
 /*Entrypoint. Connects to EDDN and launches all related goroutines*/
 func EDDNListener() {
 	restoreFromFTP(false)
 	go onTheRefreshHandler()
-	go eddnMessageHandler()
+	// go eddnMessageHandler()
 	go csvBackupHandler()
 
 	//open the connection
@@ -66,7 +66,9 @@ func EDDNListener() {
 			continue
 		}
 
-		UploaderChannel <- message.Header.UploaderID
+		if message.Event == "FSDJump" {
+			UPLOADERS_SINCE_REFRESH++
+		}
 	}
 }
 
@@ -84,22 +86,31 @@ func decodeMessage(rawMessage []byte) (*EDDNMessage, error) {
 		return nil, err
 	}
 
+	//Find and save the event type
+	var inner map[string]any
+	if err := json.Unmarshal(message.Message, &inner); err != nil {
+		return nil, fmt.Errorf("failed to unmarshal inner message: %w", err)
+	}
+	if event, ok := inner["event"]; ok {
+		message.Event = event.(string)
+	}
+
 	return &message, nil
 }
 
-/*
-Manages the UPLOADERS_SINCE_REFRESH list.
-If it sees a uploaderID that isn't in the list,
-it adds it.
-*/
-func eddnMessageHandler() {
-	for {
-		uploaderID := <-UploaderChannel
-		if !slices.Contains(UPLOADERS_SINCE_REFRESH, uploaderID) {
-			UPLOADERS_SINCE_REFRESH = append(UPLOADERS_SINCE_REFRESH, uploaderID)
-		}
-	}
-}
+// /*
+// Manages the UPLOADERS_SINCE_REFRESH list.
+// If it sees a uploaderID that isn't in the list,
+// it adds it.
+// */
+// func eddnMessageHandler() {
+// 	for {
+// 		uploaderID := <-UploaderChannel
+// 		if !slices.Contains(UPLOADERS_SINCE_REFRESH, uploaderID) {
+// 			UPLOADERS_SINCE_REFRESH = append(UPLOADERS_SINCE_REFRESH, uploaderID)
+// 		}
+// 	}
+// }
 
 /*
 Every UPLOADER_COUNT_TIME, updates the UPLOADERS_PAST_HOUR
@@ -112,10 +123,10 @@ func onTheRefreshHandler() {
 
 		var entry UploaderEntry
 		entry.Timestamp = time.Now()
-		entry.Uploaders = len(UPLOADERS_SINCE_REFRESH)
+		entry.Messages = UPLOADERS_SINCE_REFRESH
 
 		UPLOADERS_PAST_HOUR = append(UPLOADERS_PAST_HOUR, entry)
-		UPLOADERS_SINCE_REFRESH = []string{}
+		UPLOADERS_SINCE_REFRESH = 0
 
 		// log.Println("Seen " + strconv.Itoa(entry.Uploaders) + " in the past minute")
 	}

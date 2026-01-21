@@ -14,8 +14,8 @@ ever seen on the EDDN (by the app)
 func GetHighestEDDNCount() int {
 	highest := 0
 	for _, v := range UPLOADERS_ALL_TIME {
-		if v.Uploaders > highest {
-			highest = v.Uploaders
+		if v.Messages > highest {
+			highest = v.Messages
 		}
 	}
 
@@ -24,7 +24,14 @@ func GetHighestEDDNCount() int {
 
 /*Returns the last hourly count for EDDN*/
 func GetCurrentEDDNCount() string {
-	return strconv.Itoa(UPLOADERS_ALL_TIME[len(UPLOADERS_ALL_TIME)-1].Uploaders)
+	if len(UPLOADERS_PAST_HOUR) == 0 {
+		if len(UPLOADERS_ALL_TIME) == 0 {
+			return "0"
+		} else {
+			return strconv.Itoa(UPLOADERS_ALL_TIME[len(UPLOADERS_ALL_TIME)-1].Messages * 60)
+		}
+	}
+	return strconv.Itoa(UPLOADERS_PAST_HOUR[len(UPLOADERS_PAST_HOUR)-1].Messages * 60)
 }
 
 /*Is ED online?*/

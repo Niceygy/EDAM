@@ -11,24 +11,34 @@ func eddnActivityRating() float64 {
 	var largest int = eddn.GetHighestEDDNCount()
 	current, _ := strconv.Atoi(eddn.GetCurrentEDDNCount())
 
+	if largest < current {
+		largest = current
+	}
+
 	return (float64(current) / float64(largest)) * 100
 }
 
 func steamActivityRating() float64 {
-	var current int = GetSteamPlayerCount()
+	var current float64 = float64(GetSteamPlayerCount())
 	var largest float64 = 25000
 
-	return (float64(current) / largest) * 100
+	if largest < current {
+		largest = current
+	}
+
+	return (current / largest) * 100
 }
 
 func twitchActivityRating() float64 {
 	//use log scale
 
-	var current int = GetEliteStreamViewerCount()
+	var current float64 = float64(GetEliteStreamViewerCount())
 	var largest float64 = 10000
 
 	if current <= 0 {
 		return 0
+	} else if largest < current {
+		largest = current
 	}
 
 	log_min := math.Log(1.0)
