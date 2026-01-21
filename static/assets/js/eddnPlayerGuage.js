@@ -12,3 +12,12 @@ fetch("/data/eddncount")
   .then((response) => console.log(response.status) || response)
   .then((response) => response.text())
   .then((response) => eddnPlayerKnob.setValue(response));
+
+const interval = setInterval(function () {
+  fetch("/data/eddncount")
+    .then((response) => console.log(response.status) || response)
+    .then((response) => response.text())
+    .then((response) => eddnPlayerKnob.setValue(response));
+}, 60 * 1000 /*seconds*/);
+
+clearInterval(interval);

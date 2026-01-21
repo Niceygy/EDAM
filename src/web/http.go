@@ -7,11 +7,12 @@ import (
 	"os"
 	"strings"
 
+	"github.com/gorilla/websocket"
 	"github.com/niceygy/edam/eddn"
 	"github.com/niceygy/edam/services"
 )
 
-// var upgrader = websocket.Upgrader{}
+var upgrader = websocket.Upgrader{}
 
 func middleware(h http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -66,7 +67,7 @@ func Serve() {
 		fmt.Fprintln(w, services.GetEliteStreamViewerCount())
 	})
 
-	/*http.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {
 		calcEndpointMiddleware(w)
 		conn, err := upgrader.Upgrade(w, r, nil)
 		if err != nil {
@@ -75,14 +76,22 @@ func Serve() {
 		}
 		go func() {
 			for {
-				uploaderID := <-eddn.UploaderChannel
-				if err := conn.WriteMessage(websocket.TextMessage, []byte(uploaderID)); err != nil {
-					// log.Println(err)
-					return
+				messageType := <-eddn.UploaderChannel
+				switch messageType {
+				case eddn.EDMessage_FSD:
+					if err := conn.WriteMessage(websocket.TextMessage, []byte("FSD")); err != nil {
+						return
+					}
+				case eddn.EDMessage_Docked:
+					if err := conn.WriteMessage(websocket.TextMessage, []byte("Docked")); err != nil {
+						return
+					}
+				default:
 				}
+
 			}
 		}()
-	})*/
+	})
 
 	log.Println("Started server on :3696")
 	if err := http.ListenAndServe(":3696", nil); err != nil {

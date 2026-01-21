@@ -1,5 +1,5 @@
 let isLiveUploaderCountActive = false;
-let seenUploaders = [];
+let message = 0;
 
 let protocol = "ws";
 if (window.location.protocol == "https:") {
@@ -14,19 +14,16 @@ function toggleLiveUploaderCount() {
     document.getElementById("liveUploaderBtn").innerText = "Stop live EDDN Count";
     websocket = new WebSocket(`${protocol}://${window.location.hostname}:${window.location.port}/ws`);
 
-    websocket.addEventListener("message", (e) => {
+    websocket.addEventListener("message", (_) => {
       if (isLiveUploaderCountActive) {
-        if (!seenUploaders.includes(e.data)) {
-          seenUploaders.push(e.data);
-        }
-
-        document.getElementById("liveUploaderText").innerText = `Live Uploaders: ${seenUploaders.length}`;
+        message++;
+        document.getElementById("liveUploaderText").innerText = `--: ${message}`;
       }
     });
   } else {
     document.getElementById("liveUploaderBtn").innerText = "Start live EDDN Count";
     document.getElementById("liveUploaderText").innerText = `Live Uploaders: --`;
-    seenUploaders = [];
+    message = 0;
 
     websocket.close();
   }

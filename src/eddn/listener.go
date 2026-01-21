@@ -6,18 +6,18 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"log"
 	"time"
 
 	"github.com/go-zeromq/zmq4"
 )
 
-var UploaderChannel = make(chan string)
+var UploaderChannel = make(chan EDMessageType)
 
 /*Entrypoint. Connects to EDDN and launches all related goroutines*/
 func EDDNListener() {
 	restoreFromFTP(false)
 	go onTheRefreshHandler()
-	// go eddnMessageHandler()
 	go csvBackupHandler()
 
 	//open the connection
@@ -53,16 +53,24 @@ func EDDNListener() {
 			continue
 		}
 
-		if message.Event == EDMessage_FSD {
+		if message.Event == EDMessage_FSD || message.Event == EDMessage_Docked {
 			UPLOADERS_SINCE_REFRESH++
 		}
+
+		select { //only send if there is something to recive it
+		case UploaderChannel <- message.Event:
+		default:
+		}
 	}
+
+	log.Println("STOP")
 }
 
 /*Decodes a ZLIB encoded message into a EDDNMessage struct*/
 func decodeMessage(rawMessage []byte) (*EDDNMessage, error) {
 	r, err := zlib.NewReader(bytes.NewReader(rawMessage))
 	if err != nil {
+		log.Println(err)
 		return nil, err
 	}
 	defer r.Close()
@@ -70,6 +78,7 @@ func decodeMessage(rawMessage []byte) (*EDDNMessage, error) {
 	var message EDDNMessage
 	err = json.NewDecoder(r).Decode(&message)
 	if err != nil {
+		log.Println(err)
 		return nil, err
 	}
 
@@ -82,8 +91,10 @@ func decodeMessage(rawMessage []byte) (*EDDNMessage, error) {
 		switch event.(string) {
 		case "FSDJump":
 			message.Event = EDMessage_FSD
+			// log.Println("FSDJump")
 		case "DockingGranted", "DockingDenied":
 			message.Event = EDMessage_Docked
+			// log.Println("Docked")
 		default:
 			message.Event = EDMessage_Other
 		}
