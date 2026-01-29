@@ -20,50 +20,53 @@ func EDDNListener() {
 	go onTheRefreshHandler()
 	go csvBackupHandler()
 
-	//open the connection
-	sub := zmq4.NewSub(context.Background())
-	defer sub.Close()
+	for {
 
-	err := sub.Dial("tcp://eddn.edcd.io:9500")
-	if err != nil {
-		fmt.Println(err.Error())
-		return
-	}
+		//open the connection
+		sub := zmq4.NewSub(context.Background())
+		defer sub.Close()
 
-	err = sub.SetOption(zmq4.OptionSubscribe, "")
-	if err != nil {
-		fmt.Println(err.Error())
-		return
-	}
-
-	run := true
-	for run {
-		//for each message
-		msg, err := sub.Recv()
+		err := sub.Dial("tcp://eddn.edcd.io:9500")
 		if err != nil {
 			fmt.Println(err.Error())
-			run = false
-			continue
+			return
 		}
 
-		message, err := decodeMessage(msg.Frames[0])
+		err = sub.SetOption(zmq4.OptionSubscribe, "")
 		if err != nil {
 			fmt.Println(err.Error())
-			run = false
-			continue
+			return
 		}
 
-		if message.Event == EDMessage_FSD || message.Event == EDMessage_Docked {
-			UPLOADERS_SINCE_REFRESH++
+		run := true
+		for run {
+			//for each message
+			msg, err := sub.Recv()
+			if err != nil {
+				fmt.Println(err.Error())
+				run = false
+				continue
+			}
+
+			message, err := decodeMessage(msg.Frames[0])
+			if err != nil {
+				fmt.Println(err.Error())
+				run = false
+				continue
+			}
+
+			if message.Event == EDMessage_FSD || message.Event == EDMessage_Docked {
+				UPLOADERS_SINCE_REFRESH++
+			}
+
+			select { //only send if there is something to recive it
+			case UploaderChannel <- message.Event:
+			default:
+			}
 		}
 
-		select { //only send if there is something to recive it
-		case UploaderChannel <- message.Event:
-		default:
-		}
+		log.Println("STOP")
 	}
-
-	log.Println("STOP")
 }
 
 /*Decodes a ZLIB encoded message into a EDDNMessage struct*/

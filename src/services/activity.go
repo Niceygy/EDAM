@@ -51,7 +51,7 @@ func twitchActivityRating() float64 {
 
 func OverallActivityRating() float64 {
 	if eddn.GetEDStatus() != eddn.EDStateOnline {
-		return 0
+		return -1
 	}
 
 	var eddn float64 = eddnActivityRating()

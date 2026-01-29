@@ -3,6 +3,11 @@ const activityRatings = ["Server hamsters must be asleep", "Off-Peak", "About no
 function setActivityMessage(rating) {
   rating = Math.round(rating);
 
+  if (rating == -1) {
+    document.getElementById("activityRatingMessage").innerText = `The Milky Way is down for maintenance.`;
+    return;
+  }
+
   if (rating > 99) {
     document.getElementById("activityRatingMessage").innerText = `${activityRatings[4]} (${rating}% active)`;
   } else if (rating > 70) {
