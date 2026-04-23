@@ -16,7 +16,7 @@ var UploaderChannel = make(chan EDMessageType)
 
 /*Entrypoint. Connects to EDDN and launches all related goroutines*/
 func EDDNListener() {
-	restoreFromFTP(false)
+	restoreFromFile(false)
 	go onTheRefreshHandler()
 	go csvBackupHandler()
 

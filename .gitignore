@@ -3,3 +3,4 @@ __debug*
 static/data/*
 static/data
 edam
+data/

@@ -1,8 +1,6 @@
 package eddn
 
 import (
-	"bytes"
-	"io"
 	"log"
 	"math"
 	"os"
@@ -36,22 +34,28 @@ func openFTP() *ftp.ServerConn {
 	return c
 }
 
-func restoreFromFTP(returnNotRestore bool) []UploaderEntry {
-	conn := openFTP()
-	r, err := conn.Retr(getEnvVar("FTP_FULLPATH"))
+func saveToFile(data string) {
+	f, err := os.OpenFile(getEnvVar("HISTORICAL_DATA_FILE"), os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0755)
 	if err != nil {
 		panic(err)
 	}
-	defer r.Close()
 
-	buf, err := io.ReadAll(r)
-	if (string(buf)) == "" {
+	f.WriteString(data)
+	f.Close()
+}
+
+func restoreFromFile(returnNotRestore bool) []UploaderEntry {
+	buf, err := os.ReadFile(getEnvVar("HISTORICAL_DATA_FILE"))
+
+	if err != nil {
+		panic(err)
+	} else if (string(buf)) == "" {
 		UPLOADERS_ALL_TIME = []UploaderEntry{}
 		log.Println("Skipped FTP restore (no data found)")
 		return []UploaderEntry{}
 	}
-	data := strings.Split(string(buf), "\n")
 
+	data := strings.Split(string(buf), "\n")
 	var result []UploaderEntry
 
 	for i := range data {
@@ -77,7 +81,7 @@ func restoreFromFTP(returnNotRestore bool) []UploaderEntry {
 		result = append(result, entry)
 	}
 
-	log.Println("Restored from FTP")
+	log.Println("Restored from file " + getEnvVar("HISTORICAL_DATA_FILE"))
 
 	if returnNotRestore {
 		return result
@@ -123,7 +127,7 @@ func csvBackupHandler() {
 
 		// get the old CSV & update it
 
-		var oldCSV []UploaderEntry = restoreFromFTP(true)
+		var oldCSV []UploaderEntry = restoreFromFile(true)
 		var newCSV []UploaderEntry = append(oldCSV, entry)
 
 		//convert it back to a string
@@ -140,22 +144,24 @@ func csvBackupHandler() {
 		}
 		//save it
 
-		conn := openFTP()
-		err := conn.Delete(getEnvVar("FTP_FULLPATH"))
+		saveToFile(stringCSV)
 
-		if err != nil {
-			log.Panic(err)
-		}
+		// conn := openFTP()
+		// err := conn.Delete(getEnvVar("FTP_FULLPATH"))
 
-		CSV_FOR_FTP = stringCSV
-		data := bytes.NewBufferString(stringCSV)
-		err = conn.Stor(getEnvVar("FTP_FULLPATH"), data)
-		if err != nil {
-			panic(err)
-		}
+		// if err != nil {
+		// 	log.Panic(err)
+		// }
 
-		conn.Logout()
-		conn.Quit()
+		// CSV_FOR_FTP = stringCSV
+		// data := bytes.NewBufferString(stringCSV)
+		// err = conn.Stor(getEnvVar("FTP_FULLPATH"), data)
+		// if err != nil {
+		// 	panic(err)
+		// }
+
+		// conn.Logout()
+		// conn.Quit()
 
 		log.Println("Saved to CSV. Saw " + strconv.Itoa(int(average)) + " average uploaders in the past hour")
 	}
