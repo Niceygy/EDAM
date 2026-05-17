@@ -4,7 +4,7 @@ import (
 	"math"
 	"strconv"
 
-	"github.com/niceygy/edam/eddn"
+	"niceygy.net/edam/eddn"
 )
 
 func eddnActivityRating() float64 {

@@ -8,8 +8,8 @@ import (
 	"strings"
 
 	"github.com/gorilla/websocket"
-	"github.com/niceygy/edam/eddn"
-	"github.com/niceygy/edam/services"
+	"niceygy.net/edam/eddn"
+	"niceygy.net/edam/services"
 )
 
 var upgrader = websocket.Upgrader{}

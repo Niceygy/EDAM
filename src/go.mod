@@ -1,4 +1,4 @@
-module github.com/niceygy/edam
+module niceygy.net/edam
 
 go 1.25.5
 

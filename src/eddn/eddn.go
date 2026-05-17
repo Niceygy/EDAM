@@ -3,9 +3,18 @@ package eddn
 import (
 	"encoding/json"
 	"fmt"
+	"io"
+	"log"
 	"net/http"
 	"strconv"
+
+	"niceygy.net/edam/errors"
 )
+
+// float to string
+func ftos(f float64) string {
+	return strconv.FormatFloat(f, 'g', 5, 64)
+}
 
 /*
 Returns the highest number of hourly users
@@ -24,23 +33,21 @@ func GetHighestEDDNCount() int {
 
 /*Returns the last hourly count for EDDN*/
 func GetCurrentEDDNCount() string {
-	if len(UPLOADERS_PAST_HOUR) > 0 {
-		//contains something, average what we have
+	res, err := http.Get("https://eddn.edcd.io:4430/stats/")
+	errors.PanicIfErr(err)
 
-		var total int
-		var numEntriesUsed int
-		for _, v := range UPLOADERS_PAST_HOUR {
-			numEntriesUsed++
-			total += v.Messages
-		}
+	// var body []byte
 
-		return strconv.Itoa((total / numEntriesUsed) * 60)
-	} else if len(UPLOADERS_ALL_TIME) > 0 {
-		//get last hour's entry
-		return strconv.Itoa(UPLOADERS_ALL_TIME[len(UPLOADERS_ALL_TIME)-1].Messages * 60)
-	} else {
-		return "0"
+	data, err := io.ReadAll(res.Body)
+	if err != nil {
+		log.Panic(err.Error())
 	}
+
+	var jdata map[string] /*map[any]*/ any
+
+	err = json.Unmarshal(data, &jdata)
+	errors.PanicIfErr(err)
+	return ftos(jdata["inbound"].(map[string]any)["60min"].(float64))
 }
 
 /*Is ED online?*/
