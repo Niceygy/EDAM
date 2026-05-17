@@ -8,7 +8,7 @@ import (
 	"net/http"
 	"strconv"
 
-	"niceygy.net/edam/errors"
+	"niceygy.net/edam/src/errors"
 )
 
 // float to string

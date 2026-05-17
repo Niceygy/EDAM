@@ -8,7 +8,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/jlaffaye/ftp"
+	"niceygy.net/edam/src/errors"
 )
 
 func getEnvVar(key string) string {
@@ -19,19 +19,6 @@ func getEnvVar(key string) string {
 	} else {
 		return value
 	}
-}
-
-func openFTP() *ftp.ServerConn {
-	c, err := ftp.Dial(getEnvVar("FTP_ADDRESS")+":21", ftp.DialWithTimeout(5*time.Second))
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	err = c.Login(getEnvVar("FTP_USERNAME"), getEnvVar("FTP_PASSWORD"))
-	if err != nil {
-		log.Fatal(err)
-	}
-	return c
 }
 
 func saveToFile(data string) {
@@ -66,17 +53,13 @@ func restoreFromFile(returnNotRestore bool) []UploaderEntry {
 		}
 
 		_time, err := strconv.ParseInt(strings.Split(line, ",")[0], 10, 64)
-		if err != nil {
-			panic(err)
-		}
+		errors.PanicIfErr(err)
 
 		var entry UploaderEntry
 		entry.Timestamp = time.Unix(int64(_time), 0)
 		entry.Messages, err = strconv.Atoi(strings.Split(line, ",")[1])
 
-		if err != nil {
-			panic(err)
-		}
+		errors.PanicIfErr(err)
 
 		result = append(result, entry)
 	}
@@ -146,23 +129,6 @@ func csvBackupHandler() {
 
 		saveToFile(stringCSV)
 
-		// conn := openFTP()
-		// err := conn.Delete(getEnvVar("FTP_FULLPATH"))
-
-		// if err != nil {
-		// 	log.Panic(err)
-		// }
-
-		// CSV_FOR_FTP = stringCSV
-		// data := bytes.NewBufferString(stringCSV)
-		// err = conn.Stor(getEnvVar("FTP_FULLPATH"), data)
-		// if err != nil {
-		// 	panic(err)
-		// }
-
-		// conn.Logout()
-		// conn.Quit()
-
-		log.Println("Saved to CSV. Saw " + strconv.Itoa(int(average)) + " average uploaders in the past hour")
+		//log.Println("Saved to CSV. Saw " + strconv.Itoa(int(average)) + " average uploaders in the past hour")
 	}
 }

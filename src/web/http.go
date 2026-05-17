@@ -1,74 +1,68 @@
 package web
 
 import (
+	"embed"
 	"fmt"
 	"log"
 	"net/http"
-	"os"
 	"strings"
 
 	"github.com/gorilla/websocket"
-	"niceygy.net/edam/eddn"
-	"niceygy.net/edam/services"
+	"niceygy.net/edam/src/eddn"
+	"niceygy.net/edam/src/errors"
+	"niceygy.net/edam/src/services"
 )
 
 var upgrader = websocket.Upgrader{}
+var StaticFiles embed.FS
 
-func middleware(h http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		// headers
-		w.Header().Set("X-Powered-By", "NightSpeed Connect (Go)")
-		w.Header().Set("X-Created-By", "Niceygy (Ava Whale) - niceygy@niceygy.net")
-
-		h.ServeHTTP(w, r)
-	})
-}
-
-func calcEndpointMiddleware(w http.ResponseWriter) {
-	w.Header().Set("X-Powered-By", "NightSpeed Connect (Go)")
+func DoMiddlewareThings(w http.ResponseWriter) {
+	w.Header().Set("X-Powered-By", "Go Http.ListenAndServe")
 	w.Header().Set("X-Created-By", "Niceygy (Ava Whale) - niceygy@niceygy.net")
-	w.Header().Set("X-Endpoint-Type", "Calculated Live")
-
+	// w.Header().Set("X-Endpoint-Type", "Calculated Live")
 }
 
 func Serve() {
-	cwd, err := os.Getwd()
-	if err != nil {
-		log.Panic(err)
-	} else if strings.Contains(cwd, "src") {
-		cwd = strings.Replace(cwd, "src", "", 1)
-	}
 	// Serve files from the "static" directory
-	http.Handle("/", middleware(http.FileServer(http.Dir(cwd+"/static"))))
+	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		DoMiddlewareThings(w)
+		url := "static" + strings.Split(r.RequestURI, "?")[0]
+		if strings.HasSuffix(url, "/") {
+			url = url + "index.html"
+		}
+		data, err := StaticFiles.ReadFile(url)
+		errors.PanicIfErr(err)
+		fmt.Fprintln(w, string(data))
+	})
 
 	http.HandleFunc("/data/steamcount", func(w http.ResponseWriter, r *http.Request) {
-		calcEndpointMiddleware(w)
+		DoMiddlewareThings(w)
 		fmt.Fprintln(w, services.GetSteamPlayerCount())
 	})
 
 	http.HandleFunc("/data/eddncsv", func(w http.ResponseWriter, r *http.Request) {
 		data := eddn.CSV_FOR_FTP
-		calcEndpointMiddleware(w)
+		DoMiddlewareThings(w)
 		fmt.Fprintln(w, string(data))
 	})
 
 	http.HandleFunc("/data/eddncount", func(w http.ResponseWriter, r *http.Request) {
-		calcEndpointMiddleware(w)
+		DoMiddlewareThings(w)
 		fmt.Fprintln(w, eddn.GetCurrentEDDNCount())
 	})
 
 	http.HandleFunc("/data/activityrating", func(w http.ResponseWriter, r *http.Request) {
-		calcEndpointMiddleware(w)
+		DoMiddlewareThings(w)
 		fmt.Fprintln(w, services.OverallActivityRating())
 	})
 
 	http.HandleFunc("/data/twitchcount", func(w http.ResponseWriter, r *http.Request) {
-		calcEndpointMiddleware(w)
+		DoMiddlewareThings(w)
 		fmt.Fprintln(w, services.GetEliteStreamViewerCount())
 	})
 
 	http.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {
-		calcEndpointMiddleware(w)
+		DoMiddlewareThings(w)
 		conn, err := upgrader.Upgrade(w, r, nil)
 		if err != nil {
 			log.Println(err)

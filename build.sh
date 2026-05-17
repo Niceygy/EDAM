@@ -1,7 +1,4 @@
-cd src
 CGO_ENABLED=0 GOOS=linux go build -ldflags="-s -w" -o edam .
-cd ..
-mv src/edam .
 
 # Build the Docker image
 docker build -t niceygy/edam .

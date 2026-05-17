@@ -1,6 +1,6 @@
 FROM alpine:latest
 # Set working directory in the container
-WORKDIR /root/
+WORKDIR /app/
 
 COPY . .
 
