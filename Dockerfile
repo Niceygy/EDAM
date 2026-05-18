@@ -2,7 +2,7 @@ FROM alpine:latest
 # Set working directory in the container
 WORKDIR /app/
 
-COPY . .
+COPY edam .
 
 LABEL org.opencontainers.image.description="EDDataCollector"
 LABEL org.opencontainers.image.authors="Niceygy (Ava Whale)"
