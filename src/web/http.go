@@ -16,53 +16,65 @@ import (
 var upgrader = websocket.Upgrader{}
 var StaticFiles embed.FS
 
-func DoMiddlewareThings(w http.ResponseWriter) {
-	w.Header().Set("X-Powered-By", "Go Http.ListenAndServe")
+func DoMiddlewareThings(w http.ResponseWriter, content_type string) {
+	w.Header().Set("Server", "Go Http.ListenAndServe")
 	w.Header().Set("X-Created-By", "Niceygy (Ava Whale) - niceygy@niceygy.net")
-	// w.Header().Set("X-Endpoint-Type", "Calculated Live")
+	w.Header().Set("Content-Type", content_type)
 }
 
 func Serve() {
 	// Serve files from the "static" directory
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		DoMiddlewareThings(w)
 		url := "static" + strings.Split(r.RequestURI, "?")[0]
 		if strings.HasSuffix(url, "/") {
 			url = url + "index.html"
 		}
+
+		switch strings.Split(url, ".")[1] {
+		case "js":
+			DoMiddlewareThings(w, "text/javascript")
+		case "html":
+			DoMiddlewareThings(w, "text/html")
+		case "css":
+			DoMiddlewareThings(w, "text/css")
+		default:
+			DoMiddlewareThings(w, "text/plain")
+		}
+
 		data, err := StaticFiles.ReadFile(url)
+		log.Println("url=" + r.RequestURI + ", file=" + url)
 		errors.PanicIfErr(err)
 		fmt.Fprintln(w, string(data))
 	})
 
 	http.HandleFunc("/data/steamcount", func(w http.ResponseWriter, r *http.Request) {
-		DoMiddlewareThings(w)
+		DoMiddlewareThings(w, "text/plain")
 		fmt.Fprintln(w, services.GetSteamPlayerCount())
 	})
 
 	http.HandleFunc("/data/eddncsv", func(w http.ResponseWriter, r *http.Request) {
 		data := eddn.CSV_FOR_FTP
-		DoMiddlewareThings(w)
+		DoMiddlewareThings(w, "text/plain")
 		fmt.Fprintln(w, string(data))
 	})
 
 	http.HandleFunc("/data/eddncount", func(w http.ResponseWriter, r *http.Request) {
-		DoMiddlewareThings(w)
+		DoMiddlewareThings(w, "text/plain")
 		fmt.Fprintln(w, eddn.GetCurrentEDDNCount())
 	})
 
 	http.HandleFunc("/data/activityrating", func(w http.ResponseWriter, r *http.Request) {
-		DoMiddlewareThings(w)
+		DoMiddlewareThings(w, "text/plain")
 		fmt.Fprintln(w, services.OverallActivityRating())
 	})
 
 	http.HandleFunc("/data/twitchcount", func(w http.ResponseWriter, r *http.Request) {
-		DoMiddlewareThings(w)
+		DoMiddlewareThings(w, "text/plain")
 		fmt.Fprintln(w, services.GetEliteStreamViewerCount())
 	})
 
 	http.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {
-		DoMiddlewareThings(w)
+		DoMiddlewareThings(w, "text/plain")
 		conn, err := upgrader.Upgrade(w, r, nil)
 		if err != nil {
 			log.Println(err)
