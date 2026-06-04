@@ -25,6 +25,12 @@ func DoMiddlewareThings(w http.ResponseWriter, content_type string) {
 func Serve() {
 	// Serve files from the "static" directory
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path != "/" {
+			fmt.Fprintln(w, "404 Not Found")
+			r.Response.StatusCode = 404
+			r.Response.Status = "404 Not Found"
+			return
+		}
 		url := "static" + strings.Split(r.RequestURI, "?")[0]
 		if strings.HasSuffix(url, "/") {
 			url = url + "index.html"
@@ -42,7 +48,7 @@ func Serve() {
 		}
 
 		data, err := StaticFiles.ReadFile(url)
-		log.Println("url=" + r.RequestURI + ", file=" + url)
+		// log.Println("url=" + r.RequestURI + ", file=" + url)
 		errors.PanicIfErr(err)
 		fmt.Fprintln(w, string(data))
 	})
