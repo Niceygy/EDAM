@@ -9,7 +9,6 @@ import (
 
 	"github.com/gorilla/websocket"
 	"niceygy.net/edam/src/eddn"
-	"niceygy.net/edam/src/errors"
 	"niceygy.net/edam/src/services"
 )
 
@@ -54,8 +53,11 @@ func Serve() {
 
 		data, err := StaticFiles.ReadFile(url)
 		// log.Println("url=" + r.RequestURI + ", file=" + url)
-		errors.PanicIfErr(err)
-		fmt.Fprintln(w, string(data))
+		if err != nil {
+			fmt.Fprintln(w, "404 NOT FOUND")
+		} else {
+			fmt.Fprintln(w, string(data))
+		}
 	})
 
 	http.HandleFunc("/data/steamcount", func(w http.ResponseWriter, r *http.Request) {
@@ -64,7 +66,7 @@ func Serve() {
 	})
 
 	http.HandleFunc("/data/eddncsv", func(w http.ResponseWriter, r *http.Request) {
-		data := eddn.CSV_FOR_FTP
+		data := eddn.CSV_FOR_WEB
 		DoMiddlewareThings(w, "text/plain")
 		fmt.Fprintln(w, string(data))
 	})
@@ -84,31 +86,31 @@ func Serve() {
 		fmt.Fprintln(w, services.GetEliteStreamViewerCount())
 	})
 
-	http.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {
-		DoMiddlewareThings(w, "text/plain")
-		conn, err := upgrader.Upgrade(w, r, nil)
-		if err != nil {
-			log.Println(err)
-			return
-		}
-		go func() {
-			for {
-				messageType := <-eddn.UploaderChannel
-				switch messageType {
-				case eddn.EDMessage_FSD:
-					if err := conn.WriteMessage(websocket.TextMessage, []byte("FSD")); err != nil {
-						return
-					}
-				case eddn.EDMessage_Docked:
-					if err := conn.WriteMessage(websocket.TextMessage, []byte("Docked")); err != nil {
-						return
-					}
-				default:
-				}
+	// http.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {
+	// 	DoMiddlewareThings(w, "text/plain")
+	// 	conn, err := upgrader.Upgrade(w, r, nil)
+	// 	if err != nil {
+	// 		log.Println(err)
+	// 		return
+	// 	}
+	// 	go func() {
+	// 		for {
+	// 			messageType := <-eddn.UploaderChannel
+	// 			switch messageType {
+	// 			case eddn.EDMessage_FSD:
+	// 				if err := conn.WriteMessage(websocket.TextMessage, []byte("FSD")); err != nil {
+	// 					return
+	// 				}
+	// 			case eddn.EDMessage_Docked:
+	// 				if err := conn.WriteMessage(websocket.TextMessage, []byte("Docked")); err != nil {
+	// 					return
+	// 				}
+	// 			default:
+	// 			}
 
-			}
-		}()
-	})
+	// 		}
+	// 	}()
+	// })
 
 	log.Println("Started server on :3696")
 	if err := http.ListenAndServe(":3696", nil); err != nil {

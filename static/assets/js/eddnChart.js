@@ -19,6 +19,10 @@ fetch("/data/eddncsv")
     let tmp = getDataForxDays(dateRange, lines);
     let labels = tmp[0];
     let data = tmp[1];
+
+    console.log(`labels=${labels}`);
+    console.log(`data=${data}`);
+
     const ctx = document.getElementById("eddnMessagesChart").getContext("2d");
     new Chart(ctx, {
       type: "line",
@@ -57,10 +61,6 @@ fetch("/data/eddncsv")
   });
 
 function getDataForxDays(days, csv) {
-  try {
-    umami.track(`days=${days}`);
-  } catch (_) {}
-
   var labels = [];
   var data = [];
   // Source - https://stackoverflow.com/a/1296374
@@ -72,17 +72,27 @@ function getDataForxDays(days, csv) {
 
   for (let i = 1; i < csv.length; i++) {
     const [unixtime, count] = csv[i].split(",");
+
     // Convert unixtime to readable date
     const date = new Date(parseInt(unixtime, 10) * 1000);
+
+    console.log(`count = ${count}, day = ${date.toDateString()}`);
     if (date > xDaysAgo) {
       labels.push(date.toLocaleString());
       data.push(parseInt(count, 10));
-    } else {
+      if (parseInt(count, 10) > 100) {
+        console.log("------------");
+        console.log(`count=${count}`);
+        console.log(`parseInt(count, 10)=${parseInt(count, 10)}`);
+        console.log(`i=${i}`);
+        console.log(`csv[i]=${csv[i]}`);
+        console.log("------------");
+      }
     }
   }
 
-labels.reverse();
-data.reverse()
+  labels.reverse();
+  data.reverse();
 
   return [labels, data];
 }

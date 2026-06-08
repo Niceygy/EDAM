@@ -16,21 +16,6 @@ func ftos(f float64) string {
 	return strconv.FormatFloat(f, 'g', 5, 64)
 }
 
-/*
-Returns the highest number of hourly users
-ever seen on the EDDN (by the app)
-*/
-func GetHighestEDDNCount() int {
-	highest := 0
-	for _, v := range UPLOADERS_ALL_TIME {
-		if v.Messages > highest {
-			highest = v.Messages
-		}
-	}
-
-	return highest
-}
-
 /*Returns the last hourly count for EDDN*/
 func GetCurrentEDDNCount() string {
 	res, err := http.Get("https://eddn.edcd.io:4430/stats/")
